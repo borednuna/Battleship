@@ -8,7 +8,7 @@ using Battleship.Structs;
 
 namespace Battleship.Interfaces
 {
-    interface IBoard
+    public interface IBoard
     {
         public Cell GetBoard(Coordinate coordinate);
     }

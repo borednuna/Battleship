@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Battleship.Classes;
+using Battleship.Enums;
 
 namespace Battleship.Views
 {
@@ -20,7 +22,7 @@ namespace Battleship.Views
     /// </summary>
     public partial class StrategyView : Page
     {
-        private const int GridSize = 14;
+        private GameController _gameController = GameController.GetInstance();
         public StrategyView()
         {
             InitializeComponent();
@@ -28,9 +30,11 @@ namespace Battleship.Views
         }
         private void InitializeBattleGrid()
         {
-            for (int row = 0; row < GridSize; row++)
+            StrategyPanelTitle.Text = $"{_gameController.GetCurrentPlayer().GetName()}'s Strategy";
+
+            for (int row = 0; row < GameController.BOARD_WIDTH; row++)
             {
-                for (int col = 0; col < GridSize; col++)
+                for (int col = 0; col < GameController.BOARD_HEIGHT; col++)
                 {
                     // For Tracking Grid
                     var button = new Button
@@ -42,14 +46,24 @@ namespace Battleship.Views
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, col);
                     OwnGrid.Children.Add(button);
+
+                    //Add logic placement ships ...
                 }
             }
         }
 
-        private void ContinueToGame_Click(object sender, RoutedEventArgs e)
+        private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            // Navigate to the game page
-            NavigationService?.Navigate(new Uri("Views/BattleView.xaml", UriKind.Relative));
+            _gameController.SwitchTurn();
+
+            if (_gameController.GetCurrentGameState() == GameStates.PLAYING)
+            {
+                NavigationService?.Navigate(new Uri("Views/BattleView.xaml", UriKind.Relative));
+            }
+            else
+            {
+                NavigationService?.Navigate(new StrategyView());
+            }
         }
     }
 }

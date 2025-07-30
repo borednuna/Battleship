@@ -9,15 +9,16 @@ using Battleship.Enums;
 
 namespace Battleship.Classes
 {
-    class Board : IBoard
+    public class Board : IBoard
     {
         private Cell[,] _grid;
         private Dictionary<Coordinate, Ship> _ships;
-
-        public Board(int width, int height)
+        private BoardType _boardType;
+        public Board(int width, int height, BoardType boardType)
         {
+            _boardType = boardType;
             _grid = new Cell[width, height];
-            _ships = new Dictionary<Coordinate, Ship>();
+            _ships = [];
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)

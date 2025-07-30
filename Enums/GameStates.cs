@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Battleship.Interfaces
+namespace Battleship.Enums
 {
-    public interface IPlayer
+    public enum GameStates
     {
-        public string GetName();
-        public void SetName(string name);
+        INITIALIZING,
+        PLACING_SHIPS,
+        PLAYING,
+        GAME_OVER,
     }
 }

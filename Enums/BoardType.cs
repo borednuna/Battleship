@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Battleship.Interfaces
+namespace Battleship.Enums
 {
-    public interface IPlayer
+    public enum BoardType
     {
-        public string GetName();
-        public void SetName(string name);
+        OWN_BOARD,
+        TRACKING_BOARD,
     }
 }

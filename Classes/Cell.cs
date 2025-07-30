@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Battleship.Classes
 {
-    class Cell
+    public class Cell
     {
         Coordinate _position;
         bool _isHit;

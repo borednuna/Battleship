@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-           Text="Strategy Panel" 
+           x:Name="StrategyPanelTitle"
            FontSize="24" 
            HorizontalAlignment="Center" 
            Margin="10"/>
@@ -36,7 +36,7 @@
         <Button Grid.Row="2"
             Content="Continue"
             HorizontalAlignment="Center"
-            Click="ContinueToGame_Click"
+            Click="Continue_Click"
             Padding="10,5" />
     </Grid>
 </Page>

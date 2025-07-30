@@ -7,7 +7,7 @@ using Battleship.Interfaces;
 
 namespace Battleship.Classes
 {
-    class Player(string name) : IPlayer
+    public class Player(string name) : IPlayer
     {
         private string _name = name;
 

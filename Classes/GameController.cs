@@ -1,37 +1,121 @@
-﻿using System;
+﻿using Battleship.Enums;
+using Battleship.Interfaces;
+using Battleship.Structs;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Battleship.Enums;
-using Battleship.Interfaces;
-using Battleship.Structs;
+using System.Windows.Navigation;
 
 namespace Battleship.Classes
 {
-    class GameController
+    public class GameController
     {
-        private List<IPlayer> _players;
-        int _currentPlayerIndex;
-        private IBoard _ownBoard;
-        private IBoard _trackingBoard;
-        private Dictionary<IPlayer, List<IShip>> _fleet;
-        Action<IPlayer, Coordinate>? OnShotFired;
+        public const int BOARD_WIDTH = 14;
+        public const int BOARD_HEIGHT = 14;
+        private const uint PLAYERS_AMOUNT = 2;
 
-        public GameController(List<IPlayer> players)
+        int _currentPlayerIndex = 0;
+        private List<IPlayer> _players = [];
+        private Dictionary<IPlayer, List<IShip>> _fleet = [];
+        private Dictionary<IPlayer, List<IBoard>> _boards = [];
+        private GameStates _gameState = GameStates.INITIALIZING;
+        Action<IPlayer, Coordinate>? OnShotFired;
+        private static GameController? _instance;
+
+        public static GameController GetInstance()
         {
-            _players = players;
+            if (_instance == null)
+            {
+                _instance = new();
+            }
+            return _instance;
+        }
+
+        public void Reset()
+        {
+            _players.Clear();
+            _fleet.Clear();
+            _boards.Clear();
             _currentPlayerIndex = 0;
-            _ownBoard = new Board(10, 10); // Example size
-            _trackingBoard = new Board(10, 10); // Example size
-            _fleet = new Dictionary<IPlayer, List<IShip>>();
+            _gameState = GameStates.INITIALIZING;
+
+            for (int i = 0; i < PLAYERS_AMOUNT; i++)
+            {
+                Player player = new($"DefaultPlayer{i}");
+                _players.Add(player);
+
+                List<IShip> ships = [];
+                foreach (ShipType shipType in Enum.GetValues<ShipType>())
+                {
+                    Ship ship = new(shipType);
+                    ships.Add(ship);
+                }
+                _fleet.Add(player, ships);
+
+                List<IBoard> boards = [];
+                foreach (BoardType boardType in Enum.GetValues(typeof(BoardType)))
+                {
+                    Board board = new(BOARD_WIDTH, BOARD_HEIGHT, boardType);
+                    boards.Add(board);
+                }
+                _boards.Add(player, boards);
+            }
+        }
+
+        public GameStates GetCurrentGameState()
+        {
+            return _gameState;
+        }
+
+        public void SetGameState(GameStates gameState)
+        {
+            _gameState = gameState;
+        }
+
+        public void SetPlayerNames(string player1Name, string player2Name)
+        {
+            if (_players.Count < 2)
+            {
+                Debug.WriteLine("Not enough players registered.");
+            }
+
+            _players[0].SetName(player1Name);
+            _players[1].SetName(player2Name);
+
+            _gameState = GameStates.PLACING_SHIPS;
+        }
+
+        public IPlayer GetCurrentPlayer()
+        {
+            return _players[_currentPlayerIndex];
+        }
+
+        public int GetCurrentPlayerIndex()
+        {
+            return _currentPlayerIndex;
         }
 
         public void StartGame() { }
 
         public void TakeTurn(Coordinate position) { }
 
-        public void SwitchTurn() { }
+        public void SwitchTurn()
+        {
+            //Math.Abs(_currentPlayerIndex--);
+            _currentPlayerIndex++;
+            if (_currentPlayerIndex >= _players.Count)
+            {
+                _currentPlayerIndex = 0;
+
+                if (_gameState == GameStates.PLACING_SHIPS)
+                {
+                    _gameState = GameStates.PLAYING;
+                }
+            }
+        }
 
         public void EndGame() { }
 
