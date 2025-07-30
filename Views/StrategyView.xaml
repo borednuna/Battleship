@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-           Text="Strategy Page" 
+           Text="Strategy Panel" 
            FontSize="24" 
            HorizontalAlignment="Center" 
            Margin="10"/>
