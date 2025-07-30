@@ -13,15 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Battleship
+namespace Battleship.Views
 {
     /// <summary>
-    /// Interaction logic for BattlePage.xaml
+    /// Interaction logic for BattleView.xaml
     /// </summary>
-    public partial class BattlePage : Page
+    public partial class BattleView : Page
     {
         private const int GridSize = 14;
-        public BattlePage()
+        public BattleView()
         {
             InitializeComponent();
             InitializeBattleGrid();
@@ -29,18 +29,6 @@ namespace Battleship
 
         private void InitializeBattleGrid()
         {
-            for (int i = 0; i < GridSize; i++)
-            {
-                TrackingGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                OwnGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            }
-
-            for (int i = 0; i < GridSize; i++)
-            {
-                TrackingGrid.RowDefinitions.Add(new RowDefinition());
-                OwnGrid.RowDefinitions.Add(new RowDefinition());
-            }
-
             for (int row = 0; row < GridSize; row++)
             {
                 for (int col = 0; col < GridSize; col++)
