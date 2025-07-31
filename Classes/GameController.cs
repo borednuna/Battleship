@@ -105,13 +105,15 @@ namespace Battleship.Classes
             return _boards[_players[_currentPlayerIndex]];
         }
 
-        public void StartGame() { }
+        public void StartGame()
+        {
+            _gameState = GameStates.PLAYING;
+        }
 
         public void TakeTurn(Coordinate position) { }
 
         public void SwitchTurn()
         {
-            //Math.Abs(_currentPlayerIndex--);
             _currentPlayerIndex++;
             if (_currentPlayerIndex >= _players.Count)
             {
@@ -119,7 +121,7 @@ namespace Battleship.Classes
 
                 if (_gameState == GameStates.PLACING_SHIPS)
                 {
-                    _gameState = GameStates.PLAYING;
+                    StartGame();
                 }
             }
         }
@@ -182,7 +184,10 @@ namespace Battleship.Classes
             return false;
         }
 
-        public void RegisterHit(Coordinate position) { }
+        public void RegisterHit(Coordinate position)
+        {
+
+        }
 
         public bool IsSunk()
         {

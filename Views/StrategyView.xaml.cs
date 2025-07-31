@@ -25,17 +25,25 @@ namespace Battleship.Views
     /// </summary>
     public partial class StrategyView : Page
     {
-        private GameController _gameController = GameController.GetInstance();
+        private GameController _gameController;
         private ShipType? _selectedShipType;
         private List<IShip> _fleet;
         private IBoard _ownBoard;
-        private bool _isPlacementVertical = true;
+        private bool _isPlacementVertical;
 
         public StrategyView()
         {
             InitializeComponent();
             InitializePlayerData();
             InitializeBattleGrid();
+        }
+
+        private void InitializePlayerData()
+        {
+            _gameController = GameController.GetInstance();
+            _fleet = _gameController.GetCurrentPlayerFleet();
+            _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
+            _isPlacementVertical = true;
         }
 
         private void InitializeBattleGrid()
@@ -81,12 +89,6 @@ namespace Battleship.Views
 
                 ShipSelectionPanel.Children.Add(button);
             }
-        }
-
-        private void InitializePlayerData()
-        {
-            _fleet = _gameController.GetCurrentPlayerFleet();
-            _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
         }
 
         private void PickShip_Click(object sender, RoutedEventArgs e)
@@ -198,7 +200,8 @@ namespace Battleship.Views
             int col = Grid.GetColumn(button);
             List<Coordinate> occupyCoordinate = [];
 
-            if (row + shipSize > GameController.BOARD_WIDTH)
+            if (row + shipSize > GameController.BOARD_HEIGHT && _isPlacementVertical
+                || col + shipSize > GameController.BOARD_WIDTH && !_isPlacementVertical)
             {
                 MessageBox.Show("Ship cannot be placed outside the grid.");
                 return;

@@ -15,10 +15,10 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-       Text="Battle Page" 
-       FontSize="24" 
-       HorizontalAlignment="Center" 
-       Margin="10"/>
+            x:Name="BattlePanelTitle"
+            FontSize="24" 
+            HorizontalAlignment="Center" 
+            Margin="10"/>
 
         <Grid Grid.Row="1" ShowGridLines="True">
             <Grid.ColumnDefinitions>
@@ -26,15 +26,25 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <UniformGrid Grid.Column="0" 
-             x:Name="TrackingGrid" 
-             Rows="14" Columns="14" 
-             Margin="15"/>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <UniformGrid Grid.Column="1" 
-             x:Name="OwnGrid" 
-             Rows="14" Columns="14" 
-             Margin="15"/>
+                <TextBlock TextAlignment="Center" Text="Enemy Board" FontSize="15" />
+                <UniformGrid Grid.Row="1" x:Name="TrackingGrid" Margin="15"/>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock TextAlignment="Center" Text="Your Board" FontSize="15" />
+                <UniformGrid Grid.Row="1" x:Name="OwnGrid" Margin="15"/>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

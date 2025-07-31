@@ -22,10 +22,11 @@ namespace Battleship.Views
     /// </summary>
     public partial class RegisterView : Page
     {
-        private GameController _gameController = GameController.GetInstance();
+        private GameController _gameController;
         public RegisterView()
         {
             InitializeComponent();
+            _gameController = GameController.GetInstance();
         }
 
         private void RegisterPlayers_Click(object sender, RoutedEventArgs e)
