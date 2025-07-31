@@ -13,11 +13,12 @@ namespace Battleship.Classes
 {
     public class GameController
     {
+        public static uint PLAYERS_AMOUNT = 2;
         public const int BOARD_WIDTH = 10;
         public const int BOARD_HEIGHT = 10;
-        private const uint PLAYERS_AMOUNT = 2;
         public const int OWN_BOARD_INDEX = 0;
         public const int TRACKING_BOARD_INDEX = 1;
+        public const int MAX_PLAYERS_AMOUNT = 5;
 
         int _currentPlayerIndex = 0;
         private List<IPlayer> _players = [];
@@ -46,25 +47,30 @@ namespace Battleship.Classes
 
             for (int i = 0; i < PLAYERS_AMOUNT; i++)
             {
-                Player player = new($"DefaultPlayer{i}");
-                _players.Add(player);
-
-                List<IShip> ships = [];
-                foreach (ShipType shipType in Enum.GetValues<ShipType>())
-                {
-                    Ship ship = new(shipType);
-                    ships.Add(ship);
-                }
-                _fleet.Add(player, ships);
-
-                List<IBoard> boards = [];
-                foreach (BoardType boardType in Enum.GetValues(typeof(BoardType)))
-                {
-                    Board board = new(BOARD_WIDTH, BOARD_HEIGHT, boardType);
-                    boards.Add(board);
-                }
-                _boards.Add(player, boards);
+                InitializeAndAddPlayerProperties();
             }
+        }
+
+        private void InitializeAndAddPlayerProperties()
+        {
+            Player player = new("DefaultPlayerName");
+            _players.Add(player);
+
+            List<IShip> ships = [];
+            foreach (ShipType shipType in Enum.GetValues<ShipType>())
+            {
+                Ship ship = new(shipType);
+                ships.Add(ship);
+            }
+            _fleet.Add(player, ships);
+
+            List<IBoard> boards = [];
+            foreach (BoardType boardType in Enum.GetValues(typeof(BoardType)))
+            {
+                Board board = new(BOARD_WIDTH, BOARD_HEIGHT, boardType);
+                boards.Add(board);
+            }
+            _boards.Add(player, boards);
         }
 
         public GameStates GetCurrentGameState()
@@ -72,20 +78,17 @@ namespace Battleship.Classes
             return _gameState;
         }
 
-        public void SetGameState(GameStates gameState)
+        public void SetPlayerNames(List<string> playerNames)
         {
-            _gameState = gameState;
-        }
-
-        public void SetPlayerNames(string player1Name, string player2Name)
-        {
-            if (_players.Count < 2)
+            for (int i = 0; i < playerNames.Count; i++)
             {
-                Debug.WriteLine("Not enough players registered.");
-            }
+                if (i >= _players.Count)
+                {
+                    InitializeAndAddPlayerProperties();
+                }
 
-            _players[0].SetName(player1Name);
-            _players[1].SetName(player2Name);
+                _players[i].SetName(playerNames[i]);
+            }
 
             _gameState = GameStates.PLACING_SHIPS;
         }

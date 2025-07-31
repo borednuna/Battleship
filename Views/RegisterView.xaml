@@ -9,32 +9,18 @@
       Title="RegisterView">
 
     <StackPanel>
-        <TextBlock Text="Welcome to Battleship!"
-            FontSize="24"
-            HorizontalAlignment="Center"
-            Margin="10"/>
-        <TextBlock Text="Register Players"
-            FontSize="15"
-            HorizontalAlignment="Center"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <TextBlock Text="Player 1 Name:" Margin="10" VerticalAlignment="Center"/>
-            <TextBox x:Name="Player1Textbox"
-                Width="200"
-                Height="30"
-                Margin="20"/>
+        <StackPanel x:Name="NameFieldsPanel">
+            <TextBlock Text="Welcome to Battleship!"
+                FontSize="24"
+                HorizontalAlignment="Center"
+                Margin="10"/>
+            <TextBlock Text="Register Players"
+                FontSize="15"
+                HorizontalAlignment="Center"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <TextBlock Text="Player 2 Name:" Margin="10" VerticalAlignment="Center"/>
-            <TextBox x:Name="Player2Textbox"
-                Width="200"
-                Height="30"
-                Margin="20"/>
-        </StackPanel>
-        <Button Content="Start Game"
-            Width="100"
-            Height="30"
-            Margin="20"
+        <StackPanel x:Name="ButtonPanel"
             HorizontalAlignment="Center"
-            Click="RegisterPlayers_Click"/>
+            Orientation="Horizontal">
+        </StackPanel>
     </StackPanel>
 </Page>
