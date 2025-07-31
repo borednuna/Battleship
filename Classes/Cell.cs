@@ -23,5 +23,10 @@ namespace Battleship.Classes
         {
             return _ship;
         }
+
+        public void SetShip(Ship ship)
+        {
+            _ship = ship;
+        }
     }
 }

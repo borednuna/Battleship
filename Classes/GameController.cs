@@ -13,9 +13,11 @@ namespace Battleship.Classes
 {
     public class GameController
     {
-        public const int BOARD_WIDTH = 14;
-        public const int BOARD_HEIGHT = 14;
+        public const int BOARD_WIDTH = 10;
+        public const int BOARD_HEIGHT = 10;
         private const uint PLAYERS_AMOUNT = 2;
+        public const int OWN_BOARD_INDEX = 0;
+        public const int TRACKING_BOARD_INDEX = 1;
 
         int _currentPlayerIndex = 0;
         private List<IPlayer> _players = [];
@@ -98,6 +100,11 @@ namespace Battleship.Classes
             return _fleet[_players[_currentPlayerIndex]];
         }
 
+        public List<IBoard> GetCurrentPlayerBoard()
+        {
+            return _boards[_players[_currentPlayerIndex]];
+        }
+
         public void StartGame() { }
 
         public void TakeTurn(Coordinate position) { }
@@ -137,7 +144,32 @@ namespace Battleship.Classes
 
         public bool PlaceShip(ShipType type, List<Coordinate> position)
         {
-            return false;
+            IBoard currentBoard = _boards[_players[_currentPlayerIndex]][OWN_BOARD_INDEX];
+            List<IShip> currentFleet = GetCurrentPlayerFleet();
+            Dictionary<Coordinate, Ship> shipsOnBoard = currentBoard.GetShipsOnBoard();
+            Cell[,] cells = currentBoard.GetBoardCells();
+
+            foreach (Coordinate coordinate in position)
+            {
+                if (shipsOnBoard.ContainsKey(coordinate))
+                {
+                    return false;
+                }
+            }
+
+            IShip ship = currentFleet.FirstOrDefault(s => s.GetType() == type);
+            if (ship == null)
+            {
+                return false;
+            }
+
+            foreach (Coordinate coordinate in position)
+            {
+                shipsOnBoard[coordinate] = (Ship)ship;
+                cells[coordinate.GetX(), coordinate.GetY()].SetShip((Ship)ship);
+            }
+
+            return true;
         }
 
         public bool ReceiveShot(Coordinate position)

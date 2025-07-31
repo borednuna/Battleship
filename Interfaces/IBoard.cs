@@ -11,5 +11,7 @@ namespace Battleship.Interfaces
     public interface IBoard
     {
         public Cell GetBoard(Coordinate coordinate);
+        public Dictionary<Coordinate, Ship> GetShipsOnBoard();
+        public Cell[,] GetBoardCells();
     }
 }

@@ -25,6 +25,11 @@ namespace Battleship.Classes
             { ShipType.DESTROYER, 2 }
         };
 
+        public static int GetShipSize(ShipType type)
+        {
+            return ShipSizes.TryGetValue(type, out int size) ? size : 0;
+        }
+
         public void SetName(string name)
         {
             _name = name;

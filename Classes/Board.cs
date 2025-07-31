@@ -32,5 +32,15 @@ namespace Battleship.Classes
         {
             return _grid[coordinate.GetX(), coordinate.GetY()];
         }
+
+        public Cell[,] GetBoardCells()
+        {
+            return _grid;
+        }
+
+        public Dictionary<Coordinate, Ship> GetShipsOnBoard()
+        {
+            return _ships;
+        }
     }
 }
