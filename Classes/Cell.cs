@@ -19,9 +19,9 @@ namespace Battleship.Classes
             return _position;
         }
 
-        //public Ship? GetShip()
-        //{
-        //    return _ship;
-        //}
+        public Ship? GetShip()
+        {
+            return _ship;
+        }
     }
 }

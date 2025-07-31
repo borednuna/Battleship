@@ -15,6 +15,7 @@ namespace Battleship.Classes
         int _size = ShipSizes[type];
         int _hits = 0;
         List<Coordinate> _coordinates = [];
+
         public static readonly Dictionary<ShipType, int> ShipSizes = new()
         {
             { ShipType.CARRIER, 5 },

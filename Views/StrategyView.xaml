@@ -27,10 +27,14 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <WrapPanel Grid.Column="0"
+                 x:Name="ShipSelectionPanel"
+                 Orientation="Horizontal"/>
+
             <UniformGrid Grid.Column="1" 
                  x:Name="OwnGrid" 
                  Rows="14" Columns="14" 
-                 Margin="15"/>
+                 Margin="5"/>
         </Grid>
 
         <Button Grid.Row="2"

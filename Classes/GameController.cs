@@ -93,9 +93,9 @@ namespace Battleship.Classes
             return _players[_currentPlayerIndex];
         }
 
-        public int GetCurrentPlayerIndex()
+        public List<IShip> GetCurrentPlayerFleet()
         {
-            return _currentPlayerIndex;
+            return _fleet[_players[_currentPlayerIndex]];
         }
 
         public void StartGame() { }
