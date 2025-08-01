@@ -27,6 +27,7 @@ namespace Battleship.Classes
         private GameStates _gameState = GameStates.INITIALIZING;
         Action<IPlayer, Coordinate>? OnShotFired;
         private static GameController? _instance;
+        private bool _isCurrentShipPlacementVertical;
 
         public static GameController GetInstance()
         {
@@ -49,6 +50,16 @@ namespace Battleship.Classes
             {
                 InitializeAndAddPlayerProperties();
             }
+        }
+
+        public bool IsCurrentShipVertical()
+        {
+            return _isCurrentShipPlacementVertical;
+        }
+
+        public void SetCurrentShipOrientation(bool isVertical)
+        {
+            _isCurrentShipPlacementVertical = isVertical;
         }
 
         private void InitializeAndAddPlayerProperties()
@@ -147,8 +158,18 @@ namespace Battleship.Classes
             return 0;
         }
 
-        public bool PlaceShip(ShipType type, List<Coordinate> position)
+        public string? PlaceShip(ShipType? type, List<Coordinate> position)
         {
+            if (type == null)
+            {
+                return ErrorMessage.SHIP_NOT_SELECTED_ERROR;
+            }
+
+            if (position.Max(c => c.GetX()) >= BOARD_WIDTH || position.Max(c => c.GetY()) >= BOARD_HEIGHT)
+            {
+                return ErrorMessage.BOUNDARY_ERROR;
+            }
+
             IBoard currentBoard = _boards[_players[_currentPlayerIndex]][OWN_BOARD_INDEX];
             List<IShip> currentFleet = GetCurrentPlayerFleet();
             Dictionary<Coordinate, Ship> shipsOnBoard = currentBoard.GetShipsOnBoard();
@@ -158,14 +179,14 @@ namespace Battleship.Classes
             {
                 if (shipsOnBoard.ContainsKey(coordinate))
                 {
-                    return false;
+                    return ErrorMessage.SHIP_PLACEMENT_ERROR;
                 }
             }
 
             IShip ship = currentFleet.FirstOrDefault(s => s.GetType() == type);
             if (ship == null)
             {
-                return false;
+                return ErrorMessage.SHIP_NOT_FOUND_ERROR;
             }
 
             foreach (Coordinate coordinate in position)
@@ -174,7 +195,7 @@ namespace Battleship.Classes
                 cells[coordinate.GetX(), coordinate.GetY()].SetShip((Ship)ship);
             }
 
-            return true;
+            return null;
         }
 
         public bool ReceiveShot(Coordinate position)

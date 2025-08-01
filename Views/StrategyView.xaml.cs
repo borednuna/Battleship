@@ -29,7 +29,6 @@ namespace Battleship.Views
         private ShipType? _selectedShipType;
         private List<IShip> _fleet;
         private IBoard _ownBoard;
-        private bool _isPlacementVertical;
 
         public StrategyView()
         {
@@ -43,7 +42,6 @@ namespace Battleship.Views
             _gameController = GameController.GetInstance();
             _fleet = _gameController.GetCurrentPlayerFleet();
             _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
-            _isPlacementVertical = true;
         }
 
         private void InitializeBattleGrid()
@@ -152,7 +150,7 @@ namespace Battleship.Views
                 for (int i = 0; i < shipSize; i++)
                 {
                     Button targetButton;
-                    if (_isPlacementVertical)
+                    if (_gameController.IsCurrentShipVertical())
                     {
                         int targetRow = buttonRow + i;
                         targetButton = OwnGrid.Children
@@ -188,28 +186,15 @@ namespace Battleship.Views
 
         private void PlaceShip_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedShipType == null)
-            {
-                MessageBox.Show("Please select a ship type first.");
-                return;
-            }
-
             Button button = (Button)sender;
             int shipSize = Ship.GetShipSize(_selectedShipType.Value);
             int row = Grid.GetRow(button);
             int col = Grid.GetColumn(button);
             List<Coordinate> occupyCoordinate = [];
 
-            if (row + shipSize > GameController.BOARD_HEIGHT && _isPlacementVertical
-                || col + shipSize > GameController.BOARD_WIDTH && !_isPlacementVertical)
-            {
-                MessageBox.Show("Ship cannot be placed outside the grid.");
-                return;
-            }
-
             for (int i = 0; i < shipSize; i++)
             {
-                if (_isPlacementVertical)
+                if (_gameController.IsCurrentShipVertical())
                 {
                     int targetRow = row + i;
                     Coordinate coordinate = new();
@@ -227,28 +212,26 @@ namespace Battleship.Views
                 }
             }
 
-            if (_gameController.PlaceShip((ShipType)_selectedShipType, occupyCoordinate))
+            string? errorMessage = _gameController.PlaceShip((ShipType)_selectedShipType, occupyCoordinate);
+            if (errorMessage != null)
             {
-                RepaintBoard();
+                MessageBox.Show(errorMessage);
+                return;
+            }
 
-                foreach (Button child in ShipSelectionPanel.Children)
+            RepaintBoard();
+            foreach (Button child in ShipSelectionPanel.Children)
+            {
+                if (child.Name == _selectedShipType.ToString())
                 {
-                    if (child.Name == _selectedShipType.ToString())
-                    {
-                        child.IsEnabled = false;
-                    }
+                    child.IsEnabled = false;
                 }
-
-                _selectedShipType = null;
-            } else
-            {
-                MessageBox.Show("Ship cannot be placed here. Please try again.");
             }
         }
 
         private void SwitchOrientation_Click(object sender, RoutedEventArgs e)
         {
-            _isPlacementVertical = !_isPlacementVertical;
+            _gameController.SetCurrentShipOrientation(!_gameController.IsCurrentShipVertical());
         }
 
         private void Continue_Click(object sender, RoutedEventArgs e)
