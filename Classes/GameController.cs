@@ -21,10 +21,11 @@ namespace Battleship.Classes
         public const int MAX_PLAYERS_AMOUNT = 5;
 
         int _currentPlayerIndex = 0;
+        int _currentEnemyIndex = 1;
         private List<IPlayer> _players = [];
         private Dictionary<IPlayer, List<IShip>> _fleet = [];
         private Dictionary<IPlayer, List<IBoard>> _boards = [];
-        private GameStates _gameState = GameStates.INITIALIZING;
+        private GameStates _gameState;
         Action<IPlayer, Coordinate>? OnShotFired;
         private static GameController? _instance;
         private bool _isCurrentShipPlacementVertical;
@@ -109,6 +110,11 @@ namespace Battleship.Classes
             return _players[_currentPlayerIndex];
         }
 
+        public IPlayer GetCurrentEnemy()
+        {
+            return _players[_currentEnemyIndex];
+        }
+
         public List<IShip> GetCurrentPlayerFleet()
         {
             return _fleet[_players[_currentPlayerIndex]];
@@ -124,15 +130,33 @@ namespace Battleship.Classes
             _gameState = GameStates.PLAYING;
         }
 
-        public void TakeTurn(Coordinate position) { }
+        public void TakeTurn(Coordinate position)
+        {
+            RegisterHit(position);
+            SwitchTurn();
+        }
+
+        public void IsHitAccurate(Coordinate position, out bool isAccurate, out IShip? cellShip)
+        {
+            IBoard currentEnemyBoard = _boards[_players[_currentEnemyIndex]][OWN_BOARD_INDEX];
+            Cell cell = currentEnemyBoard.GetBoard(position);
+            isAccurate = cell.IsHit();
+            cellShip = cell.GetShip();
+        }
 
         public void SwitchTurn()
         {
             _currentPlayerIndex++;
+            _currentEnemyIndex++;
+
+            if (_currentEnemyIndex >= _players.Count)
+            {
+                _currentEnemyIndex = 0;
+            }
+
             if (_currentPlayerIndex >= _players.Count)
             {
                 _currentPlayerIndex = 0;
-
                 if (_gameState == GameStates.PLACING_SHIPS)
                 {
                     StartGame();
@@ -191,6 +215,7 @@ namespace Battleship.Classes
 
             foreach (Coordinate coordinate in position)
             {
+                //TODO: recheck the ship inside cells
                 shipsOnBoard[coordinate] = (Ship)ship;
                 cells[coordinate.GetX(), coordinate.GetY()].SetShip((Ship)ship);
             }
@@ -210,7 +235,15 @@ namespace Battleship.Classes
 
         public void RegisterHit(Coordinate position)
         {
+            IBoard currentPlayerTrackingBoard = _boards[_players[_currentPlayerIndex]][TRACKING_BOARD_INDEX];
+            Cell cell = currentPlayerTrackingBoard.GetBoard(position);
+            cell.setIsHit(true);
 
+            IsHitAccurate(position, out bool isAccurate, out IShip? cellShip);
+            if (isAccurate && cellShip != null)
+            {
+                cell.SetShip((Ship)cellShip);
+            }
         }
 
         public bool IsSunk()

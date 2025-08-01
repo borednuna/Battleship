@@ -32,7 +32,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock TextAlignment="Center" Text="Enemy Board" FontSize="15" />
+                <TextBlock x:Name="EnemyBoard" TextAlignment="Center" Text="Enemy Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="TrackingGrid" Margin="15"/>
             </Grid>
 

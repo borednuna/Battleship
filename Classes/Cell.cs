@@ -28,5 +28,15 @@ namespace Battleship.Classes
         {
             _ship = ship;
         }
+
+        public void setIsHit(bool isHit)
+        {
+            _isHit = isHit;
+        }
+
+        public bool IsHit()
+        {
+            return _isHit;
+        }
     }
 }
