@@ -186,6 +186,12 @@ namespace Battleship.Views
 
         private void PlaceShip_Click(object sender, RoutedEventArgs e)
         {
+            if (_selectedShipType == null)
+            {
+                MessageBox.Show(ErrorMessage.SHIP_NOT_SELECTED_ERROR);
+                return;
+            }
+
             Button button = (Button)sender;
             int shipSize = Ship.GetShipSize(_selectedShipType.Value);
             int row = Grid.GetRow(button);
@@ -220,13 +226,14 @@ namespace Battleship.Views
             }
 
             RepaintBoard();
-            foreach (Button child in ShipSelectionPanel.Children)
+            foreach (Button selectedShipOption in ShipSelectionPanel.Children)
             {
-                if (child.Name == _selectedShipType.ToString())
+                if (selectedShipOption.Name == _selectedShipType.ToString())
                 {
-                    child.IsEnabled = false;
+                    selectedShipOption.IsEnabled = false;
                 }
             }
+            _selectedShipType = null;
         }
 
         private void SwitchOrientation_Click(object sender, RoutedEventArgs e)
