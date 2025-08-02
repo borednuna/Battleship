@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Battleship.Structs;
+using System.Diagnostics;
 
 namespace Battleship.Views
 {
@@ -72,7 +73,7 @@ namespace Battleship.Views
                     var trackingButton = new Button
                     {
                         Margin = new Thickness(1),
-                        Background = trackingCellIsHit ? trackingCellHasShip ? Brushes.Red : Brushes.Brown : Brushes.LightYellow,
+                        Background = trackingCellIsHit ? trackingCellHasShip ? Brushes.Green : Brushes.Red : Brushes.LightYellow,
                         Content = trackingCellHasShip ? "🚢" : "",
                     };
 
@@ -104,6 +105,13 @@ namespace Battleship.Views
             Coordinate targetCoordinate = new();
             targetCoordinate.SetX(col);
             targetCoordinate.SetY(row);
+
+            string? takeTurnError = _gameController.TakeTurnValidate(targetCoordinate);
+            if (takeTurnError != null)
+            {
+                MessageBox.Show(takeTurnError);
+                return;
+            }
 
             _gameController.TakeTurn(targetCoordinate);
             _gameController.IsHitAccurate(targetCoordinate, out bool isAccurate, out IShip? _);

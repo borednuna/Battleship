@@ -13,5 +13,6 @@ namespace Battleship.Interfaces
         public Cell GetBoard(Coordinate coordinate);
         public Dictionary<Coordinate, Ship> GetShipsOnBoard();
         public Cell[,] GetBoardCells();
+        public void AppendShipsOnBoard(Coordinate coordinate, IShip ship);
     }
 }

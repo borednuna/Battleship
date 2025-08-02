@@ -42,5 +42,10 @@ namespace Battleship.Classes
         {
             return _ships;
         }
+
+        public void AppendShipsOnBoard(Coordinate coordinate, IShip ship)
+        {
+            _ships[coordinate] = (Ship)ship;
+        }
     }
 }

@@ -17,5 +17,7 @@ namespace Battleship.Interfaces
         public void SetSize(int size);
         public List<Coordinate> GetPositions();
         public void SetPositions(List<Coordinate> positions);
+        public int GetHits();
+        public void SetHits(int hits);
     }
 }

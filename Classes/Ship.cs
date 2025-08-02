@@ -64,5 +64,15 @@ namespace Battleship.Classes
         {
             _coordinates = coordinates;
         }
+
+        public int GetHits()
+        {
+            return _hits;
+        }
+
+        public void SetHit(int hits)
+        {
+            _hits = hits;
+        }
     }
 }

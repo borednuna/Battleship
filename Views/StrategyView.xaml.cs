@@ -218,12 +218,13 @@ namespace Battleship.Views
                 }
             }
 
-            string? errorMessage = _gameController.PlaceShip((ShipType)_selectedShipType, occupyCoordinate);
+            string? errorMessage = _gameController.PlaceShipValidate(_selectedShipType, occupyCoordinate);
             if (errorMessage != null)
             {
                 MessageBox.Show(errorMessage);
                 return;
             }
+            bool placeShipSuccess = _gameController.PlaceShip((ShipType)_selectedShipType, occupyCoordinate);
 
             RepaintBoard();
             foreach (Button selectedShipOption in ShipSelectionPanel.Children)
