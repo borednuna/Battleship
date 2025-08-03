@@ -26,6 +26,7 @@ namespace Battleship.Classes
         private Dictionary<IPlayer, List<IShip>> _fleet = [];
         private Dictionary<IPlayer, List<IBoard>> _boards = [];
         private GameStates _gameState;
+        private IPlayer? _winner;
         Action<IPlayer, Coordinate>? OnShotFired;
         private static GameController? _instance;
         private bool _isCurrentShipPlacementVertical;
@@ -45,6 +46,7 @@ namespace Battleship.Classes
             _fleet.Clear();
             _boards.Clear();
             _currentPlayerIndex = 0;
+            _winner = null;
             _gameState = GameStates.INITIALIZING;
 
             for (int i = 0; i < PLAYERS_AMOUNT; i++)
@@ -148,6 +150,7 @@ namespace Battleship.Classes
             
             if (AllShipsSunk())
             {
+                EndGame();
                 _gameState = GameStates.GAME_OVER;
             }
         }
@@ -172,17 +175,25 @@ namespace Battleship.Classes
             }
         }
 
-        public void EndGame() { }
+        public void EndGame()
+        {
+            _winner = CheckWinner();
+        }
 
         public IPlayer CheckWinner()
         {
-            // Logic to determine the winner
-            return _players.FirstOrDefault() ?? new Player("Nunski"); // Placeholder for actual winner logic
+            bool currentPlayerShipsSunk = AllShipsSunk();
+            if (currentPlayerShipsSunk)
+            {
+                return _players[_currentEnemyIndex];
+            }
+
+            return _players[_currentPlayerIndex];
         }
 
-        public bool Shoot(Coordinate position)
+        public IPlayer? GetWinner()
         {
-            return false;
+            return _winner;
         }
 
         public int RemainingShips()
@@ -258,7 +269,7 @@ namespace Battleship.Classes
             return true;
         }
 
-        public bool ReceiveShot(Coordinate position)
+        public bool HasShip(Coordinate position)
         {
             IBoard currentEnemyBoard = _boards[_players[_currentEnemyIndex]][OWN_BOARD_INDEX];
             Cell enemyCell = currentEnemyBoard.GetBoard(position);
@@ -289,7 +300,7 @@ namespace Battleship.Classes
             Cell enemyCell = currentEnemyBoard.GetBoard(position);
             IShip? cellShip = enemyCell.GetShip();
 
-            bool isAccurate = ReceiveShot(position);
+            bool isAccurate = HasShip(position);
             if (isAccurate && cellShip != null)
             {
                 cell.SetShip((Ship)cellShip);
@@ -311,7 +322,12 @@ namespace Battleship.Classes
             ship?.SetHits(ship.GetHits() + 1);
         }
 
-        public bool HasShip(Coordinate position)
+        public bool Shoot(Coordinate position)
+        {
+            return false;
+        }
+
+        public bool ReceiveShot(Coordinate position)
         {
             return false;
         }

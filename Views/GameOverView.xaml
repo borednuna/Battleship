@@ -9,6 +9,13 @@
       Title="GameOverView">
 
     <Grid>
-        
+        <Border Background="LightGray" Margin="20" Padding="20" CornerRadius="10">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Game Over!" FontSize="36" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="WinnerField" FontSize="24" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                <TextBlock Text="Thank you for playing!" FontSize="24" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                <Button Content="Restart Game" Width="150" Height="40" Click="RestartGame_Click"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>

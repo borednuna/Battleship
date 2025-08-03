@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Battleship.Classes;
+using Battleship.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,23 @@ namespace Battleship.Views
     /// </summary>
     public partial class GameOverView : Page
     {
+        GameController _gameController = GameController.GetInstance();
         public GameOverView()
         {
             InitializeComponent();
+        }
+
+        public void SetWinnerMessage(string message)
+        {
+            IPlayer winner = _gameController.GetWinner();
+
+            WinnerField.Text = $"{winner.GetName()} won the game!";
+        }
+
+        public void RestartGame_Click(object sender, RoutedEventArgs e)
+        {
+            _gameController.Reset();
+            NavigationService?.Navigate(new Uri("/Views/RegisterView.xaml", UriKind.Relative));
         }
     }
 }

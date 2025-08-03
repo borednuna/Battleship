@@ -70,7 +70,7 @@ namespace Battleship.Classes
             return _hits;
         }
 
-        public void SetHit(int hits)
+        public void SetHits(int hits)
         {
             _hits = hits;
         }

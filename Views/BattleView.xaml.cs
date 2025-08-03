@@ -114,7 +114,7 @@ namespace Battleship.Views
             }
 
             _gameController.TakeTurn(targetCoordinate);
-            _gameController.IsHitAccurate(targetCoordinate, out bool isAccurate, out IShip? _);
+            bool cellHasShip = _gameController.HasShip(targetCoordinate);
 
             if (_gameController.GetCurrentGameState() == GameStates.GAME_OVER)
             {
