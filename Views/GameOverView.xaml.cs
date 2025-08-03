@@ -26,13 +26,17 @@ namespace Battleship.Views
         public GameOverView()
         {
             InitializeComponent();
+            SetWinnerMessage();
         }
 
-        public void SetWinnerMessage(string message)
+        public void SetWinnerMessage()
         {
-            IPlayer winner = _gameController.GetWinner();
+            IPlayer? winner = _gameController.GetWinner();
 
-            WinnerField.Text = $"{winner.GetName()} won the game!";
+            if (winner != null)
+            {
+                WinnerField.Text = $"{winner.GetName()} won the game!";
+            }
         }
 
         public void RestartGame_Click(object sender, RoutedEventArgs e)

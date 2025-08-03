@@ -46,6 +46,7 @@ namespace Battleship.Classes
             _fleet.Clear();
             _boards.Clear();
             _currentPlayerIndex = 0;
+            _currentEnemyIndex = 1;
             _winner = null;
             _gameState = GameStates.INITIALIZING;
 
@@ -178,17 +179,38 @@ namespace Battleship.Classes
         public void EndGame()
         {
             _winner = CheckWinner();
+            Debug.WriteLine($"Winner: {_winner.GetName()}");
         }
 
         public IPlayer CheckWinner()
         {
-            bool currentPlayerShipsSunk = AllShipsSunk();
-            if (currentPlayerShipsSunk)
+            foreach (var playerFleet in _fleet)
             {
-                return _players[_currentEnemyIndex];
+                List<IShip> fleet = playerFleet.Value;
+                bool playerAllShipSunk = true;
+
+                foreach (IShip ship in fleet)
+                {
+                    if (ship.GetHits() < ship.GetSize())
+                    {
+                        playerAllShipSunk = false;
+                    }
+                }
+
+                if (playerAllShipSunk)
+                {
+                    int loserIndex = _players.IndexOf(playerFleet.Key);
+                    int winnerIndex = loserIndex - 1;
+                    if (winnerIndex < 0)
+                    {
+                        winnerIndex = _players.Count - 1;
+                    }
+
+                    return _players[winnerIndex];
+                }
             }
 
-            return _players[_currentPlayerIndex];
+            return new Player("DefaultWinner");
         }
 
         public IPlayer? GetWinner()
@@ -279,15 +301,26 @@ namespace Battleship.Classes
 
         public bool AllShipsSunk()
         {
-            List<IShip> ships = GetCurrentPlayerFleet();
-            foreach (IShip ship in ships)
+            foreach (var playerFleet in _fleet)
             {
-                if (ship.GetHits() < ship.GetSize())
+                List<IShip> fleet = playerFleet.Value;
+                bool playerAllShipSunk = true;
+
+                foreach (IShip ship in fleet)
                 {
-                    return false;
+                    if (ship.GetHits() < ship.GetSize())
+                    {
+                        playerAllShipSunk = false;
+                    }
+                }
+
+                if (playerAllShipSunk)
+                {
+                    return true;
                 }
             }
-            return true;
+
+            return false;
         }
 
         public void RegisterHit(Coordinate position)
