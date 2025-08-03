@@ -27,9 +27,9 @@ namespace Battleship.Classes
         private Dictionary<IPlayer, List<IBoard>> _boards = [];
         private GameStates _gameState;
         private IPlayer? _winner;
-        Action<IPlayer, Coordinate>? OnShotFired;
         private static GameController? _instance;
         private bool _isCurrentShipPlacementVertical;
+        public event Action<IPlayer, Coordinate>? OnShotFired;
 
         public static GameController GetInstance()
         {
@@ -49,6 +49,9 @@ namespace Battleship.Classes
             _currentEnemyIndex = 1;
             _winner = null;
             _gameState = GameStates.INITIALIZING;
+
+            OnShotFired = null;
+            OnShotFired += SetTrackingBoardCellHit;
 
             for (int i = 0; i < PLAYERS_AMOUNT; i++)
             {
@@ -146,6 +149,7 @@ namespace Battleship.Classes
 
         public void TakeTurn(Coordinate position)
         {
+            OnShotFired?.Invoke(GetCurrentPlayer(), position);
             RegisterHit(position);
             SwitchTurn();
             
@@ -323,12 +327,17 @@ namespace Battleship.Classes
             return false;
         }
 
-        public void RegisterHit(Coordinate position)
+        public void SetTrackingBoardCellHit(IPlayer player, Coordinate position)
         {
-            IBoard currentPlayerTrackingBoard = _boards[_players[_currentPlayerIndex]][TRACKING_BOARD_INDEX];
+            List<IBoard> currentPlayerBoards = _boards[player];
+            IBoard currentPlayerTrackingBoard = currentPlayerBoards[TRACKING_BOARD_INDEX];
             Cell cell = currentPlayerTrackingBoard.GetBoard(position);
             cell.setIsHit(true);
+        }
 
+        public void RegisterHit(Coordinate position)
+        {
+            IBoard currentPlayerTrackingBoard = GetCurrentPlayerBoard()[TRACKING_BOARD_INDEX];
             IBoard currentEnemyBoard = _boards[_players[_currentEnemyIndex]][OWN_BOARD_INDEX];
             Cell enemyCell = currentEnemyBoard.GetBoard(position);
             IShip? cellShip = enemyCell.GetShip();
@@ -336,7 +345,7 @@ namespace Battleship.Classes
             bool isAccurate = HasShip(position);
             if (isAccurate && cellShip != null)
             {
-                cell.SetShip((Ship)cellShip);
+                currentPlayerTrackingBoard.GetBoard(position).SetShip((Ship)cellShip);
                 currentPlayerTrackingBoard.AppendShipsOnBoard(position, cellShip);
                 MarkHit(position);
             }
