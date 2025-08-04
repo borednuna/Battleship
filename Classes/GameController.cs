@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
@@ -13,15 +14,15 @@ namespace Battleship.Classes
 {
     public class GameController
     {
-        public static uint PLAYERS_AMOUNT = 2;
         public const int BOARD_WIDTH = 10;
         public const int BOARD_HEIGHT = 10;
         public const int OWN_BOARD_INDEX = 0;
         public const int TRACKING_BOARD_INDEX = 1;
         public const int MAX_PLAYERS_AMOUNT = 5;
 
-        int _currentPlayerIndex = 0;
-        int _currentEnemyIndex = 1;
+        int _currentPlayerIndex;
+        int _currentEnemyIndex;
+        bool _isPlayingWithBot;
         private List<IPlayer> _players = [];
         private Dictionary<IPlayer, List<IShip>> _fleet = [];
         private Dictionary<IPlayer, List<IBoard>> _boards = [];
@@ -49,15 +50,16 @@ namespace Battleship.Classes
             _currentEnemyIndex = 1;
             _winner = null;
             _gameState = GameStates.INITIALIZING;
+            _isPlayingWithBot = false;
 
             OnShotFired = null;
             OnShotFired += SetTrackingBoardCellHit;
             OnShotFired += SetEnemyBoardCellHit;
+        }
 
-            for (int i = 0; i < PLAYERS_AMOUNT; i++)
-            {
-                InitializeAndAddPlayerProperties();
-            }
+        public bool GetIsPlayingWithBot()
+        {
+            return _isPlayingWithBot;
         }
 
         public bool IsCurrentShipVertical()
@@ -70,10 +72,20 @@ namespace Battleship.Classes
             _isCurrentShipPlacementVertical = isVertical;
         }
 
-        private void InitializeAndAddPlayerProperties()
+        private void InitializeAndAddPlayerProperties(string name, bool isBot)
         {
-            Player player = new("DefaultPlayerName");
-            _players.Add(player);
+            Player player;
+            if (!isBot)
+            {
+                player = new(name);
+                _players.Add(player);
+            }
+            else
+            {
+                player = new("Bot Player");
+                player.SetIsBot(true);
+                _players.Add(player);
+            }
 
             List<IShip> ships = [];
             foreach (ShipType shipType in Enum.GetValues<ShipType>())
@@ -92,21 +104,142 @@ namespace Battleship.Classes
             _boards.Add(player, boards);
         }
 
+        public IPlayer? GetBotPlayer()
+        {
+            foreach (IPlayer player in _players)
+            {
+                if (player.IsBot())
+                {
+                    return player;
+                }
+            }
+            return null;
+        }
+
+        private void InitializeBotPlayerShipPlacements()
+        {
+            IPlayer botPlayer = GetBotPlayer();
+            if (botPlayer == null)
+            {
+                Debug.WriteLine(ErrorMessage.NO_BOT_FOUND_ERROR);
+                return;
+            }
+
+            Random random = new();
+            List<IShip> botFleet = _fleet[botPlayer];
+            IBoard botBoard = _boards[botPlayer][OWN_BOARD_INDEX];
+
+            foreach (IShip ship in botFleet)
+            {
+                bool isPlaced = false;
+                while (!isPlaced)
+                {
+                    List<Coordinate> positions = [];
+                    int startX = random.Next(0, BOARD_WIDTH);
+                    int startY = random.Next(0, BOARD_HEIGHT);
+                    bool isVertical = random.Next(0, 2) == 0;
+
+                    for (int i = 0; i < ship.GetSize(); i++)
+                    {
+                        int x = isVertical ? startX : startX + i;
+                        int y = isVertical ? startY + i : startY;
+                        if (x < BOARD_WIDTH && y < BOARD_HEIGHT)
+                        {
+                            Coordinate position = new();
+                            position.SetX(x);
+                            position.SetY(y);
+                            positions.Add(position);
+                        }
+                    }
+
+                    string? errorMessage = PlaceShipValidateBot(ship.GetType(), positions);
+                    if (errorMessage == null)
+                    {
+                        PlaceShipBot(ship.GetType(), positions);
+                        isPlaced = true;
+                    }
+                }
+            }
+        }
+
+        public string? PlaceShipValidateBot(ShipType? type, List<Coordinate> position)
+        {
+            if (type == null)
+            {
+                return ErrorMessage.SHIP_NOT_SELECTED_ERROR;
+            }
+            if (position.Max(c => c.GetX()) >= BOARD_WIDTH || position.Max(c => c.GetY()) >= BOARD_HEIGHT)
+            {
+                return ErrorMessage.BOUNDARY_ERROR;
+            }
+            IBoard botBoard = _boards[GetBotPlayer()][OWN_BOARD_INDEX];
+            List<IShip> botFleet = _fleet[GetBotPlayer()];
+            Dictionary<Coordinate, Ship> shipsOnBoard = botBoard.GetShipsOnBoard();
+            foreach (Coordinate coordinate in position)
+            {
+                if (shipsOnBoard.ContainsKey(coordinate))
+                {
+                    return ErrorMessage.SHIP_PLACEMENT_ERROR;
+                }
+            }
+            IShip ship = botFleet.FirstOrDefault(s => s.GetType() == type);
+            if (ship == null)
+            {
+                return ErrorMessage.SHIP_NOT_FOUND_ERROR;
+            }
+            return null;
+        }
+
+        public bool PlaceShipBot(ShipType? type, List<Coordinate> position)
+        {
+            IBoard botBoard = _boards[GetBotPlayer()][OWN_BOARD_INDEX];
+            List<IShip> botFleet = _fleet[GetBotPlayer()];
+            Dictionary<Coordinate, Ship> shipsOnBoard = botBoard.GetShipsOnBoard();
+            Cell[,] cells = botBoard.GetBoardCells();
+
+            foreach (Coordinate coordinate in position)
+            {
+                if (shipsOnBoard.ContainsKey(coordinate))
+                {
+                    return false;
+                }
+            }
+
+            IShip ship = botFleet.FirstOrDefault(s => s.GetType() == type);
+            if (ship == null)
+            {
+                return false;
+            }
+
+            foreach (Coordinate coordinate in position)
+            {
+                shipsOnBoard[coordinate] = (Ship)ship;
+                cells[coordinate.GetX(), coordinate.GetY()].SetShip((Ship)ship);
+            }
+
+            return true;
+        }
+
         public GameStates GetCurrentGameState()
         {
             return _gameState;
         }
 
-        public void SetPlayerNames(List<string> playerNames)
+        public void SetPlayers(List<string> playerNames)
         {
-            for (int i = 0; i < playerNames.Count; i++)
+            if (playerNames.Count < 2)
             {
-                if (i >= _players.Count)
+                _isPlayingWithBot = true;
+                InitializeAndAddPlayerProperties(playerNames[0], false);
+                InitializeAndAddPlayerProperties("Bot Player", true);
+                InitializeBotPlayerShipPlacements();
+            }
+            else
+            {
+                for (int i = 0; i < playerNames.Count; i++)
                 {
-                    InitializeAndAddPlayerProperties();
+                    InitializeAndAddPlayerProperties(playerNames[i], false);
                 }
-
-                _players[i].SetName(playerNames[i]);
             }
 
             _gameState = GameStates.PLACING_SHIPS;
@@ -173,21 +306,26 @@ namespace Battleship.Classes
 
         public void SwitchTurn()
         {
+            bool isPlacing = _gameState == GameStates.PLACING_SHIPS;
+
+            if (isPlacing && _isPlayingWithBot)
+            {
+                StartGame();
+                return;
+            }
+
             _currentPlayerIndex++;
             _currentEnemyIndex++;
 
-            if (_currentEnemyIndex >= _players.Count)
-            {
-                _currentEnemyIndex = 0;
-            }
-
             if (_currentPlayerIndex >= _players.Count)
-            {
                 _currentPlayerIndex = 0;
-                if (_gameState == GameStates.PLACING_SHIPS)
-                {
-                    StartGame();
-                }
+
+            if (_currentEnemyIndex >= _players.Count)
+                _currentEnemyIndex = 0;
+
+            if (isPlacing && !_isPlayingWithBot && _currentPlayerIndex == 0)
+            {
+                StartGame();
             }
         }
 
@@ -277,16 +415,6 @@ namespace Battleship.Classes
 
         public bool PlaceShip(ShipType? type, List<Coordinate> position)
         {
-            if (type == null)
-            {
-                return false;
-            }
-
-            if (position.Max(c => c.GetX()) >= BOARD_WIDTH || position.Max(c => c.GetY()) >= BOARD_HEIGHT)
-            {
-                return false;
-            }
-
             IBoard currentBoard = _boards[_players[_currentPlayerIndex]][OWN_BOARD_INDEX];
             List<IShip> currentFleet = GetPlayerFleet(_currentPlayerIndex);
             Dictionary<Coordinate, Ship> shipsOnBoard = currentBoard.GetShipsOnBoard();

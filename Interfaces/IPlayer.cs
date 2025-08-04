@@ -10,5 +10,7 @@ namespace Battleship.Interfaces
     {
         public string GetName();
         public void SetName(string name);
+        public bool IsBot();
+        public void SetIsBot(bool isBot);
     }
 }

@@ -10,6 +10,7 @@ namespace Battleship.Classes
     public class Player(string name) : IPlayer
     {
         private string _name = name;
+        private bool _isBot = false;
 
         public string GetName()
         {
@@ -18,6 +19,14 @@ namespace Battleship.Classes
         public void SetName(string name)
         {
             _name = name;
+        }
+        public bool IsBot()
+        {
+            return _isBot;
+        }
+        public void SetIsBot(bool isBot)
+        {
+            _isBot = isBot;
         }
     }
 }

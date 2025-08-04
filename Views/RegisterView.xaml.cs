@@ -24,6 +24,7 @@ namespace Battleship.Views
     {
         private GameController _gameController;
         private List<TextBox> _playerNameFields;
+        private int _playersCounter = 1;
 
         public RegisterView()
         {
@@ -35,35 +36,31 @@ namespace Battleship.Views
         public void InitializeFields()
         {
             _playerNameFields = [];
-
-            for (int i = 0; i < GameController.PLAYERS_AMOUNT; i++)
+            StackPanel playerName = new StackPanel
             {
-                StackPanel playerName = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                };
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
 
-                TextBlock playerLabel = new TextBlock
-                {
-                    Text = $"Player {i + 1}:",
-                    Margin = new Thickness(5, 0, 5, 0),
-                    VerticalAlignment = VerticalAlignment.Center
-                };
+            TextBlock playerLabel = new TextBlock
+            {
+                Text = $"Player {_playersCounter}:",
+                Margin = new Thickness(5, 0, 5, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
 
-                TextBox playerNameField = new TextBox
-                {
-                    Name = $"Player{i}Textbox",
-                    Width = 200,
-                    Height = 30,
-                    Margin = new(10),
-                };
+            TextBox playerNameField = new TextBox
+            {
+                Name = $"Player{_playersCounter}Textbox",
+                Width = 200,
+                Height = 30,
+                Margin = new(10),
+            };
 
-                playerName.Children.Add(playerLabel);
-                playerName.Children.Add(playerNameField);
-                NameFieldsPanel.Children.Add(playerName);
-                _playerNameFields.Add(playerNameField);
-            }
+            playerName.Children.Add(playerLabel);
+            playerName.Children.Add(playerNameField);
+            NameFieldsPanel.Children.Add(playerName);
+            _playerNameFields.Add(playerNameField);
 
             Button addPlayerField_Click = new Button
             {
@@ -92,13 +89,13 @@ namespace Battleship.Views
 
         private void AddPlayers_Click(object sender, RoutedEventArgs e)
         {
-            if (GameController.PLAYERS_AMOUNT >= GameController.MAX_PLAYERS_AMOUNT)
+            if (_playersCounter >= GameController.MAX_PLAYERS_AMOUNT)
             {
                 MessageBox.Show($"Maximum players amount is {GameController.MAX_PLAYERS_AMOUNT}!");
                 return;
             }
 
-            GameController.PLAYERS_AMOUNT++;
+            _playersCounter++;
             StackPanel playerName = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
@@ -107,14 +104,14 @@ namespace Battleship.Views
 
             TextBlock playerLabel = new TextBlock
             {
-                Text = $"Player {GameController.PLAYERS_AMOUNT}:",
+                Text = $"Player {_playersCounter}:",
                 Margin = new Thickness(5, 0, 5, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
 
             TextBox playerNameField = new TextBox
             {
-                Name = $"Player{GameController.PLAYERS_AMOUNT}Textbox",
+                Name = $"Player{_playersCounter}Textbox",
                 Width = 200,
                 Height = 30,
                 Margin = new(10),
@@ -130,8 +127,10 @@ namespace Battleship.Views
         {
             if (_playerNameFields.Count < 2)
             {
-                MessageBox.Show("Not enough players!");
-                return;
+                if (MessageBox.Show(ErrorMessage.CONFIRM_TO_PLAY_WITH_BOT, "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return;
+                }
             }
 
             List<string> _playerNames = [];
@@ -141,7 +140,7 @@ namespace Battleship.Views
                 _playerNames.Add(name);
             }
 
-            _gameController.SetPlayerNames(_playerNames);
+            _gameController.SetPlayers(_playerNames);
             NavigationService?.Navigate(new Uri("/Views/StrategyView.xaml", UriKind.RelativeOrAbsolute));
         }
     }
