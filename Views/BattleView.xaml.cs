@@ -87,7 +87,7 @@ namespace Battleship.Views
                     {
                         Margin = new Thickness(1),
                         Content = cellHasShip ? "🚢" : "",
-                        Background = cellIsHit ? Brushes.LightCoral : Brushes.LightGray,
+                        Background = cellIsHit ? Brushes.Red : Brushes.LightGray,
                     };
 
                     Grid.SetRow(ownButton, row);
@@ -102,14 +102,18 @@ namespace Battleship.Views
             List<IShip> currentPlayerShips = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayerIndex());
             List<IShip> enemyShips = _gameController.GetPlayerFleet(_gameController.GetCurrentEnemyIndex());
 
+            YourShips.Text = $"Your ships: {_gameController.RemainingShips()} ships remaining";
+
             foreach (IShip ship in currentPlayerShips)
             {
                 TextBlock shipBlock = new TextBlock
                 {
                     Text = $"{ship.GetName()} - ({ship.GetHits()}/{ship.GetSize()})",
                     Margin = new Thickness(5),
-                    FontSize = 10,
+                    FontSize = 13,
                     Foreground = Brushes.Black,
+                    Padding = new Thickness(5),
+                    Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
                 };
 
                 OwnShips.Children.Add(shipBlock);
@@ -121,8 +125,10 @@ namespace Battleship.Views
                 {
                     Text = $"{ship.GetName()}",
                     Margin = new Thickness(5),
-                    FontSize = 10,
-                    Foreground = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.Black,
+                    FontSize = 13,
+                    Foreground = Brushes.Black,
+                    Padding = new Thickness(5),
+                    Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
                 };
                 EnemyShips.Children.Add(shipBlock);
             }
@@ -156,6 +162,13 @@ namespace Battleship.Views
             {
                 NavigationService?.Navigate(new BattleView());
             }
+        }
+
+        private void RepaintGrids()
+        {
+            OwnGrid.Children.Clear();
+            TrackingGrid.Children.Clear();
+            InitializeBattleGrid();
         }
     }
 }

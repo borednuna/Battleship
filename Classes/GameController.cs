@@ -52,6 +52,7 @@ namespace Battleship.Classes
 
             OnShotFired = null;
             OnShotFired += SetTrackingBoardCellHit;
+            OnShotFired += SetEnemyBoardCellHit;
 
             for (int i = 0; i < PLAYERS_AMOUNT; i++)
             {
@@ -193,7 +194,6 @@ namespace Battleship.Classes
         public void EndGame()
         {
             _winner = CheckWinner();
-            Debug.WriteLine($"Winner: {_winner.GetName()}");
         }
 
         public IPlayer CheckWinner()
@@ -234,7 +234,17 @@ namespace Battleship.Classes
 
         public int RemainingShips()
         {
-            return 0;
+            List<IShip> ships = GetPlayerFleet(_currentPlayerIndex);
+            int remainingShips = 0;
+
+            foreach (IShip ship in ships)
+            {
+                if (ship.GetHits() < ship.GetSize())
+                {
+                    remainingShips++;
+                }
+            }
+            return remainingShips;
         }
 
         public string? PlaceShipValidate(ShipType? type, List<Coordinate> position)
@@ -345,6 +355,14 @@ namespace Battleship.Classes
             cell.setIsHit(true);
         }
 
+        public void SetEnemyBoardCellHit(IPlayer player, Coordinate position)
+        {
+            List<IBoard> currentEnemyBoards = _boards[GetCurrentEnemy()];
+            IBoard currentEnemyBoard = currentEnemyBoards[OWN_BOARD_INDEX];
+            Cell cell = currentEnemyBoard.GetBoard(position);
+            cell.setIsHit(true);
+        }
+
         public void RegisterHit(Coordinate position)
         {
             IBoard currentPlayerTrackingBoard = GetCurrentPlayerBoard()[TRACKING_BOARD_INDEX];
@@ -361,11 +379,6 @@ namespace Battleship.Classes
             }
         }
 
-        public bool IsSunk()
-        {
-            return false;
-        }
-
         public void MarkHit(Coordinate position)
         {
             IBoard currentEnemyBoard = _boards[_players[_currentEnemyIndex]][OWN_BOARD_INDEX];
@@ -380,6 +393,11 @@ namespace Battleship.Classes
         }
 
         public bool ReceiveShot(Coordinate position)
+        {
+            return false;
+        }
+
+        public bool IsSunk()
         {
             return false;
         }

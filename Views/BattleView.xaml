@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Battleship.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="530" d:DesignWidth="800"
       Title="BattleView">
 
     <Grid>
@@ -31,13 +31,13 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock x:Name="EnemyBoard" TextAlignment="Center" Text="Enemy Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="TrackingGrid" Margin="15"/>
-                <StackPanel x:Name="EnemyShips" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock TextAlignment="Center" Text="Your Ships" Width="200" Margin="5"/>
-                </StackPanel>
+                <TextBlock Grid.Row="2" TextAlignment="Center" Text="Enemy Ships" Width="200" Margin="5"/>
+                <WrapPanel Height="Auto" x:Name="EnemyShips" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"/>
             </Grid>
 
             <Grid Grid.Column="1">
@@ -45,13 +45,13 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock TextAlignment="Center" Text="Your Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="OwnGrid" Margin="15"/>
-                <StackPanel x:Name="OwnShips" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock TextAlignment="Center" Text="Your Ships" Width="200" Margin="5"/>
-                </StackPanel>
+                <TextBlock x:Name="YourShips" Grid.Row="2" TextAlignment="Center" Width="200" Margin="5"/>
+                <WrapPanel Height="Auto" x:Name="OwnShips" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"/>
             </Grid>
         </Grid>
     </Grid>
