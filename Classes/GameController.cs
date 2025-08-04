@@ -116,14 +116,24 @@ namespace Battleship.Classes
             return _players[_currentPlayerIndex];
         }
 
+        public int GetCurrentPlayerIndex()
+        {
+            return _currentPlayerIndex;
+        }
+
+        public int GetCurrentEnemyIndex()
+        {
+            return _currentEnemyIndex;
+        }
+
         public IPlayer GetCurrentEnemy()
         {
             return _players[_currentEnemyIndex];
         }
 
-        public List<IShip> GetCurrentPlayerFleet()
+        public List<IShip> GetPlayerFleet(int _playerIndex)
         {
-            return _fleet[_players[_currentPlayerIndex]];
+            return _fleet[_players[_playerIndex]];
         }
 
         public List<IBoard> GetCurrentPlayerBoard()
@@ -238,7 +248,7 @@ namespace Battleship.Classes
                 return ErrorMessage.BOUNDARY_ERROR;
             }
             IBoard currentBoard = _boards[_players[_currentPlayerIndex]][OWN_BOARD_INDEX];
-            List<IShip> currentFleet = GetCurrentPlayerFleet();
+            List<IShip> currentFleet = GetPlayerFleet(_currentPlayerIndex);
             Dictionary<Coordinate, Ship> shipsOnBoard = currentBoard.GetShipsOnBoard();
             foreach (Coordinate coordinate in position)
             {
@@ -268,7 +278,7 @@ namespace Battleship.Classes
             }
 
             IBoard currentBoard = _boards[_players[_currentPlayerIndex]][OWN_BOARD_INDEX];
-            List<IShip> currentFleet = GetCurrentPlayerFleet();
+            List<IShip> currentFleet = GetPlayerFleet(_currentPlayerIndex);
             Dictionary<Coordinate, Ship> shipsOnBoard = currentBoard.GetShipsOnBoard();
             Cell[,] cells = currentBoard.GetBoardCells();
 

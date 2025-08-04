@@ -40,7 +40,7 @@ namespace Battleship.Views
         private void InitializePlayerData()
         {
             _gameController = GameController.GetInstance();
-            _fleet = _gameController.GetCurrentPlayerFleet();
+            _fleet = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayerIndex());
             _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
         }
 

@@ -30,20 +30,28 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock x:Name="EnemyBoard" TextAlignment="Center" Text="Enemy Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="TrackingGrid" Margin="15"/>
+                <StackPanel x:Name="EnemyShips" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock TextAlignment="Center" Text="Your Ships" Width="200" Margin="5"/>
+                </StackPanel>
             </Grid>
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock TextAlignment="Center" Text="Your Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="OwnGrid" Margin="15"/>
+                <StackPanel x:Name="OwnShips" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock TextAlignment="Center" Text="Your Ships" Width="200" Margin="5"/>
+                </StackPanel>
             </Grid>
         </Grid>
     </Grid>

@@ -35,6 +35,7 @@ namespace Battleship.Views
             InitializeComponent();
             InitializePlayerData();
             InitializeBattleGrid();
+            InitializeShipPanel();
         }
 
         private void InitializePlayerData()
@@ -93,6 +94,37 @@ namespace Battleship.Views
                     Grid.SetColumn(ownButton, col);
                     OwnGrid.Children.Add(ownButton);
                 }
+            }
+        }
+
+        private void InitializeShipPanel()
+        {
+            List<IShip> currentPlayerShips = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayerIndex());
+            List<IShip> enemyShips = _gameController.GetPlayerFleet(_gameController.GetCurrentEnemyIndex());
+
+            foreach (IShip ship in currentPlayerShips)
+            {
+                TextBlock shipBlock = new TextBlock
+                {
+                    Text = $"{ship.GetName()} - ({ship.GetHits()}/{ship.GetSize()})",
+                    Margin = new Thickness(5),
+                    FontSize = 10,
+                    Foreground = Brushes.Black,
+                };
+
+                OwnShips.Children.Add(shipBlock);
+            }
+
+            foreach (IShip ship in enemyShips)
+            {
+                TextBlock shipBlock = new TextBlock
+                {
+                    Text = $"{ship.GetName()}",
+                    Margin = new Thickness(5),
+                    FontSize = 10,
+                    Foreground = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.Black,
+                };
+                EnemyShips.Children.Add(shipBlock);
             }
         }
 
