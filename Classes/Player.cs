@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Battleship.Enums;
 using Battleship.Interfaces;
 
 namespace Battleship.Classes
 {
-    public class Player(string name) : IPlayer
+    public class Player(string name, PlayerType type = PlayerType.HUMAN) : IPlayer
     {
         private string _name = name;
-        private bool _isBot = false;
+        private PlayerType _type = type;
 
         public string GetName()
         {
@@ -20,13 +21,13 @@ namespace Battleship.Classes
         {
             _name = name;
         }
-        public bool IsBot()
+        public PlayerType GetPlayerType()
         {
-            return _isBot;
+            return _type;
         }
-        public void SetIsBot(bool isBot)
+        public void SetPlayerType(PlayerType type)
         {
-            _isBot = isBot;
+            _type = type;
         }
     }
 }

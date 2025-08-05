@@ -23,24 +23,13 @@ namespace Battleship.Classes
         int _currentPlayerIndex;
         int _currentEnemyIndex;
         bool _isPlayingWithBot;
-        private Random _random = new();
+        private Random _random = new Random();
         private List<IPlayer> _players = [];
         private Dictionary<IPlayer, List<IShip>> _fleet = [];
         private Dictionary<IPlayer, List<IBoard>> _boards = [];
         private GameStates _gameState;
         private IPlayer? _winner;
-        private static GameController? _instance;
-        private bool _isCurrentShipPlacementVertical;
         public event Action<IPlayer, Coordinate>? OnShotFired;
-
-        public static GameController GetInstance()
-        {
-            if (_instance == null)
-            {
-                _instance = new();
-            }
-            return _instance;
-        }
 
         public void Reset()
         {
@@ -58,58 +47,41 @@ namespace Battleship.Classes
             OnShotFired += SetEnemyBoardCellHit;
         }
 
+        public void SetGameState(GameStates state)
+        {
+            _gameState = state;
+        }
+
+        public void AddPlayer(IPlayer player)
+        {
+            _players.Add(player);
+        }
+
+        public void AddPlayerFleet(IPlayer player, List<IShip> fleet)
+        {
+            _fleet[player] = fleet;
+        }
+
+        public void AddPlayerBoard(IPlayer player, List<IBoard> boards)
+        {
+            _boards[player] = boards;
+        }
+
         public bool GetIsPlayingWithBot()
         {
             return _isPlayingWithBot;
         }
 
-        public bool IsCurrentShipVertical()
+        public void SetIsPlayingWithBot(bool isPlayingWithBot)
         {
-            return _isCurrentShipPlacementVertical;
+            _isPlayingWithBot = isPlayingWithBot;
         }
 
-        public void SetCurrentShipOrientation(bool isVertical)
-        {
-            _isCurrentShipPlacementVertical = isVertical;
-        }
-
-        private void InitializeAndAddPlayerProperties(string name, bool isBot)
-        {
-            Player player;
-            if (!isBot)
-            {
-                player = new(name);
-                _players.Add(player);
-            }
-            else
-            {
-                player = new("Bot Player");
-                player.SetIsBot(true);
-                _players.Add(player);
-            }
-
-            List<IShip> ships = [];
-            foreach (ShipType shipType in Enum.GetValues<ShipType>())
-            {
-                Ship ship = new(shipType);
-                ships.Add(ship);
-            }
-            _fleet.Add(player, ships);
-
-            List<IBoard> boards = [];
-            foreach (BoardType boardType in Enum.GetValues(typeof(BoardType)))
-            {
-                Board board = new(BOARD_WIDTH, BOARD_HEIGHT, boardType);
-                boards.Add(board);
-            }
-            _boards.Add(player, boards);
-        }
-
-        public IPlayer? GetBotPlayer()
+        public IPlayer? GetHumanPlayer()
         {
             foreach (IPlayer player in _players)
             {
-                if (player.IsBot())
+                if (player.GetPlayerType() == PlayerType.HUMAN)
                 {
                     return player;
                 }
@@ -117,46 +89,16 @@ namespace Battleship.Classes
             return null;
         }
 
-        private void InitializeBotPlayerShipPlacements()
+        public IPlayer? GetBotPlayer()
         {
-            IPlayer botPlayer = GetBotPlayer();
-            if (botPlayer == null)
+            foreach (IPlayer player in _players)
             {
-                Debug.WriteLine(ErrorMessage.NO_BOT_FOUND_ERROR);
-                return;
-            }
-
-            List<IShip> botFleet = _fleet[botPlayer];
-            IBoard botBoard = _boards[botPlayer][OWN_BOARD_INDEX];
-
-            foreach (IShip ship in botFleet)
-            {
-                bool isPlaced = false;
-                while (!isPlaced)
+                if (player.GetPlayerType() == PlayerType.BOT)
                 {
-                    List<Coordinate> positions = [];
-                    int startX = _random.Next(0, BOARD_WIDTH);
-                    int startY = _random.Next(0, BOARD_HEIGHT);
-                    bool isVertical = _random.Next(0, 2) == 0;
-
-                    for (int i = 0; i < ship.GetSize(); i++)
-                    {
-                        int x = isVertical ? startX : startX + i;
-                        int y = isVertical ? startY + i : startY;
-                        Coordinate position = new();
-                        position.SetX(x);
-                        position.SetY(y);
-                        positions.Add(position);
-                    }
-
-                    string? errorMessage = PlaceShipValidateBot(ship.GetType(), positions);
-                    if (errorMessage == null)
-                    {
-                        PlaceShipBot(ship.GetType(), positions);
-                        isPlaced = true;
-                    }
+                    return player;
                 }
             }
+            return null;
         }
 
         public string? PlaceShipValidateBot(ShipType? type, List<Coordinate> position)
@@ -228,27 +170,7 @@ namespace Battleship.Classes
         {
             return _gameState;
         }
-
-        public void SetPlayers(List<string> playerNames)
-        {
-            if (playerNames.Count < 2)
-            {
-                _isPlayingWithBot = true;
-                InitializeAndAddPlayerProperties(playerNames[0], false);
-                InitializeAndAddPlayerProperties("Bot Player", true);
-                InitializeBotPlayerShipPlacements();
-            }
-            else
-            {
-                for (int i = 0; i < playerNames.Count; i++)
-                {
-                    InitializeAndAddPlayerProperties(playerNames[i], false);
-                }
-            }
-
-            _gameState = GameStates.PLACING_SHIPS;
-        }
-
+        
         public IPlayer GetCurrentPlayer()
         {
             return _players[_currentPlayerIndex];
@@ -274,6 +196,21 @@ namespace Battleship.Classes
             return _fleet[_players[_playerIndex]];
         }
 
+        public List<IBoard> GetPlayerBoards(int _playerIndex)
+        {
+            return _boards[_players[_playerIndex]];
+        }
+
+        public List<IShip> GetPlayerFleet(IPlayer player)
+        {
+            return _fleet[player];
+        }
+
+        public List<IBoard> GetPlayerBoards(IPlayer player)
+        {
+            return _boards[player];
+        }
+
         public List<IBoard> GetCurrentPlayerBoard()
         {
             return _boards[_players[_currentPlayerIndex]];
@@ -297,6 +234,8 @@ namespace Battleship.Classes
 
         public void TakeTurn(Coordinate position)
         {
+            Debug.WriteLine($"Current player index: {_currentPlayerIndex}");
+            Debug.WriteLine($"Enemy index: {_currentPlayerIndex}");
             OnShotFired?.Invoke(GetCurrentPlayer(), position);
             RegisterHit(position);
             SwitchTurn();
@@ -304,10 +243,9 @@ namespace Battleship.Classes
             if (AllShipsSunk())
             {
                 EndGame();
-                _gameState = GameStates.GAME_OVER;
             }
 
-            if (_isPlayingWithBot && GetCurrentPlayer().IsBot())
+            if (_isPlayingWithBot && GetCurrentPlayer().GetPlayerType() == PlayerType.BOT)
             {
                 TakeTurnBot();
             }
@@ -339,6 +277,8 @@ namespace Battleship.Classes
         {
             bool isPlacing = _gameState == GameStates.PLACING_SHIPS;
 
+            Debug.WriteLine($"Players count: {_players.Count}");
+
             if (isPlacing && _isPlayingWithBot)
             {
                 StartGame();
@@ -354,7 +294,6 @@ namespace Battleship.Classes
             if (_currentEnemyIndex >= _players.Count)
                 _currentEnemyIndex = 0;
 
-            // recheck this condition
             if (isPlacing && !_isPlayingWithBot && _currentPlayerIndex == 0)
             {
                 StartGame();
@@ -364,6 +303,7 @@ namespace Battleship.Classes
         public void EndGame()
         {
             _winner = CheckWinner();
+            _gameState = GameStates.GAME_OVER;
         }
 
         public IPlayer CheckWinner()
@@ -394,7 +334,7 @@ namespace Battleship.Classes
                 }
             }
 
-            return new Player("DefaultWinner");
+            return new Player("DefaultWinner", PlayerType.HUMAN);
         }
 
         public IPlayer? GetWinner()

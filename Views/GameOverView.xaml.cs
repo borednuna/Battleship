@@ -22,9 +22,10 @@ namespace Battleship.Views
     /// </summary>
     public partial class GameOverView : Page
     {
-        GameController _gameController = GameController.GetInstance();
-        public GameOverView()
+        GameController _gameController;
+        public GameOverView(GameController gameController)
         {
+            _gameController = gameController;
             InitializeComponent();
             SetWinnerMessage();
         }
@@ -42,7 +43,7 @@ namespace Battleship.Views
         public void RestartGame_Click(object sender, RoutedEventArgs e)
         {
             _gameController.Reset();
-            NavigationService?.Navigate(new Uri("/Views/RegisterView.xaml", UriKind.Relative));
+            NavigationService?.Navigate(new RegisterView(_gameController));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Battleship.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Battleship.Interfaces
     {
         public string GetName();
         public void SetName(string name);
-        public bool IsBot();
-        public void SetIsBot(bool isBot);
+        public PlayerType GetPlayerType();
+        public void SetPlayerType(PlayerType type);
     }
 }

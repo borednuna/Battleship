@@ -30,8 +30,9 @@ namespace Battleship.Views
         private IBoard _trackingBoard;
         private Dictionary<Coordinate, Ship> _shipsOnOwnBoard;
 
-        public BattleView()
+        public BattleView(GameController gameController)
         {
+            _gameController = gameController;
             InitializeComponent();
             InitializePlayerData();
             InitializeBattleGrid();
@@ -40,7 +41,7 @@ namespace Battleship.Views
 
         private void InitializePlayerData()
         {
-            _gameController = GameController.GetInstance();
+            var currentPlayer = _gameController.GetCurrentPlayer();
             _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
             _shipsOnOwnBoard = _ownBoard.GetShipsOnBoard();
             _trackingBoard = _gameController.GetCurrentPlayerBoard()[GameController.TRACKING_BOARD_INDEX];
@@ -163,15 +164,17 @@ namespace Battleship.Views
                 if (_gameController.GetIsPlayingWithBot())
                 {
                     RepaintGrids();
-                } else
+                }
+                else
                 {
-                    NavigationService?.Navigate(new BattleView());
+                    NavigationService?.Navigate(new BattleView(_gameController));
                 }
             }
         }
 
         private void RepaintGrids()
         {
+            var currentPlayer = _gameController.GetCurrentPlayer();
             OwnGrid.Children.Clear();
             TrackingGrid.Children.Clear();
             OwnShipsPanel.Children.Clear();

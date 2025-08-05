@@ -29,9 +29,11 @@ namespace Battleship.Views
         private ShipType? _selectedShipType;
         private List<IShip> _fleet;
         private IBoard _ownBoard;
+        private bool _isShipVertical = true;
 
-        public StrategyView()
+        public StrategyView(GameController gameController)
         {
+            _gameController = gameController;
             InitializeComponent();
             InitializePlayerData();
             InitializeBattleGrid();
@@ -39,7 +41,6 @@ namespace Battleship.Views
 
         private void InitializePlayerData()
         {
-            _gameController = GameController.GetInstance();
             _fleet = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayerIndex());
             _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
         }
@@ -49,6 +50,11 @@ namespace Battleship.Views
             StrategyPanelTitle.Text = $"{_gameController.GetCurrentPlayer().GetName()}'s Strategy";
             OwnGrid.Rows = GameController.BOARD_HEIGHT;
             OwnGrid.Columns = GameController.BOARD_WIDTH;
+
+            if (_gameController.GetIsPlayingWithBot())
+            {
+                AutoPlaceBotFleet();
+            }
 
             for (int row = 0; row < GameController.BOARD_WIDTH; row++)
             {
@@ -114,7 +120,7 @@ namespace Battleship.Views
                     Coordinate coordinate = new();
                     coordinate.SetX(col);
                     coordinate.SetY(row);
-                    Button targetButton = OwnGrid.Children
+                    Button? targetButton = OwnGrid.Children
                             .Cast<UIElement>()
                             .OfType<Button>()
                             .FirstOrDefault(b => Grid.GetRow(b) == row && Grid.GetColumn(b) == col);
@@ -149,15 +155,16 @@ namespace Battleship.Views
                 RepaintBoard();
                 for (int i = 0; i < shipSize; i++)
                 {
-                    Button targetButton;
-                    if (_gameController.IsCurrentShipVertical())
+                    Button? targetButton;
+                    if (_isShipVertical)
                     {
                         int targetRow = buttonRow + i;
                         targetButton = OwnGrid.Children
                             .Cast<UIElement>()
                             .OfType<Button>()
                             .FirstOrDefault(b => Grid.GetRow(b) == targetRow && Grid.GetColumn(b) == buttonCol);
-                    } else
+                    }
+                    else
                     {
                         int targetCol = buttonCol + i;
                         targetButton = OwnGrid.Children
@@ -200,7 +207,7 @@ namespace Battleship.Views
 
             for (int i = 0; i < shipSize; i++)
             {
-                if (_gameController.IsCurrentShipVertical())
+                if (_isShipVertical)
                 {
                     int targetRow = row + i;
                     Coordinate coordinate = new();
@@ -237,22 +244,65 @@ namespace Battleship.Views
             _selectedShipType = null;
         }
 
+        private void AutoPlaceBotFleet()
+        {
+            IPlayer? botPlayer = _gameController.GetBotPlayer();
+            if (botPlayer == null)
+            {
+                Debug.WriteLine(ErrorMessage.NO_BOT_FOUND_ERROR);
+                return;
+            }
+
+            List<IShip> botFleet = _gameController.GetPlayerFleet(botPlayer);
+            IBoard botBoard = _gameController.GetPlayerBoards(botPlayer)[GameController.OWN_BOARD_INDEX];
+
+            Random random = new();
+            foreach (IShip ship in botFleet)
+            {
+                bool isPlaced = false;
+                while (!isPlaced)
+                {
+                    List<Coordinate> positions = [];
+                    int startX = random.Next(0, GameController.BOARD_WIDTH);
+                    int startY = random.Next(0, GameController.BOARD_HEIGHT);
+                    bool isVertical = random.Next(0, 2) == 0;
+
+                    for (int i = 0; i < ship.GetSize(); i++)
+                    {
+                        int x = isVertical ? startX : startX + i;
+                        int y = isVertical ? startY + i : startY;
+                        Coordinate position = new();
+                        position.SetX(x);
+                        position.SetY(y);
+                        positions.Add(position);
+                    }
+
+                    string? errorMessage = _gameController.PlaceShipValidateBot(ship.GetType(), positions);
+                    if (errorMessage == null)
+                    {
+                        _gameController.PlaceShipBot(ship.GetType(), positions);
+                        isPlaced = true;
+                    }
+                }
+            }
+        }
+
         private void SwitchOrientation_Click(object sender, RoutedEventArgs e)
         {
-            _gameController.SetCurrentShipOrientation(!_gameController.IsCurrentShipVertical());
+            _isShipVertical = !_isShipVertical;
         }
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
             _gameController.SwitchTurn();
 
-            if (_gameController.GetCurrentGameState() == GameStates.PLAYING)
+            if (_gameController.GetCurrentGameState() == GameStates.PLAYING || _gameController.GetIsPlayingWithBot())
             {
-                NavigationService?.Navigate(new Uri("Views/BattleView.xaml", UriKind.Relative));
+                NavigationService?.Navigate(new BattleView(_gameController));
             }
             else
             {
-                NavigationService?.Navigate(new StrategyView());
+                NavigationService?.Navigate(new StrategyView(_gameController));
             }
         }
     }

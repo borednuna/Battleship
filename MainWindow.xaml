@@ -6,5 +6,5 @@
         xmlns:local="clr-namespace:Battleship"
         mc:Ignorable="d"
         Title="MainWindow" Height="530" Width="800">
-    <Frame Source="Views/RegisterView.xaml"></Frame>
+    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
 </Window>
