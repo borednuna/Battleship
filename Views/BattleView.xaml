@@ -37,7 +37,7 @@
                 <TextBlock x:Name="EnemyBoard" TextAlignment="Center" Text="Enemy Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="TrackingGrid" Margin="15"/>
                 <TextBlock Grid.Row="2" TextAlignment="Center" Text="Enemy Ships" Width="200" Margin="5"/>
-                <WrapPanel Height="Auto" x:Name="EnemyShips" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"/>
+                <WrapPanel Height="Auto" x:Name="EnemyShipsPanel" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"/>
             </Grid>
 
             <Grid Grid.Column="1">
@@ -51,7 +51,7 @@
                 <TextBlock TextAlignment="Center" Text="Your Board" FontSize="15" />
                 <UniformGrid Grid.Row="1" x:Name="OwnGrid" Margin="15"/>
                 <TextBlock x:Name="YourShips" Grid.Row="2" TextAlignment="Center" Width="200" Margin="5"/>
-                <WrapPanel Height="Auto" x:Name="OwnShips" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"/>
+                <WrapPanel Height="Auto" x:Name="OwnShipsPanel" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"/>
             </Grid>
         </Grid>
     </Grid>

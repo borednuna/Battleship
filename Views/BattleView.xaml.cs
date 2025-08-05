@@ -116,7 +116,7 @@ namespace Battleship.Views
                     Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
                 };
 
-                OwnShips.Children.Add(shipBlock);
+                OwnShipsPanel.Children.Add(shipBlock);
             }
 
             foreach (IShip ship in enemyShips)
@@ -130,7 +130,7 @@ namespace Battleship.Views
                     Padding = new Thickness(5),
                     Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
                 };
-                EnemyShips.Children.Add(shipBlock);
+                EnemyShipsPanel.Children.Add(shipBlock);
             }
         }
 
@@ -160,7 +160,13 @@ namespace Battleship.Views
             }
             else
             {
-                NavigationService?.Navigate(new BattleView());
+                if (_gameController.GetIsPlayingWithBot())
+                {
+                    RepaintGrids();
+                } else
+                {
+                    NavigationService?.Navigate(new BattleView());
+                }
             }
         }
 
@@ -168,7 +174,11 @@ namespace Battleship.Views
         {
             OwnGrid.Children.Clear();
             TrackingGrid.Children.Clear();
+            OwnShipsPanel.Children.Clear();
+            EnemyShipsPanel.Children.Clear();
+
             InitializeBattleGrid();
+            InitializeShipPanel();
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Battleship.Classes
         int _currentPlayerIndex;
         int _currentEnemyIndex;
         bool _isPlayingWithBot;
+        private Random _random = new();
         private List<IPlayer> _players = [];
         private Dictionary<IPlayer, List<IShip>> _fleet = [];
         private Dictionary<IPlayer, List<IBoard>> _boards = [];
@@ -125,7 +126,6 @@ namespace Battleship.Classes
                 return;
             }
 
-            Random random = new();
             List<IShip> botFleet = _fleet[botPlayer];
             IBoard botBoard = _boards[botPlayer][OWN_BOARD_INDEX];
 
@@ -135,21 +135,18 @@ namespace Battleship.Classes
                 while (!isPlaced)
                 {
                     List<Coordinate> positions = [];
-                    int startX = random.Next(0, BOARD_WIDTH);
-                    int startY = random.Next(0, BOARD_HEIGHT);
-                    bool isVertical = random.Next(0, 2) == 0;
+                    int startX = _random.Next(0, BOARD_WIDTH);
+                    int startY = _random.Next(0, BOARD_HEIGHT);
+                    bool isVertical = _random.Next(0, 2) == 0;
 
                     for (int i = 0; i < ship.GetSize(); i++)
                     {
                         int x = isVertical ? startX : startX + i;
                         int y = isVertical ? startY + i : startY;
-                        if (x < BOARD_WIDTH && y < BOARD_HEIGHT)
-                        {
-                            Coordinate position = new();
-                            position.SetX(x);
-                            position.SetY(y);
-                            positions.Add(position);
-                        }
+                        Coordinate position = new();
+                        position.SetX(x);
+                        position.SetY(y);
+                        positions.Add(position);
                     }
 
                     string? errorMessage = PlaceShipValidateBot(ship.GetType(), positions);
@@ -168,13 +165,20 @@ namespace Battleship.Classes
             {
                 return ErrorMessage.SHIP_NOT_SELECTED_ERROR;
             }
-            if (position.Max(c => c.GetX()) >= BOARD_WIDTH || position.Max(c => c.GetY()) >= BOARD_HEIGHT)
+            if (
+                position.Max(c => c.GetX()) >= BOARD_WIDTH
+                || position.Max(c => c.GetY()) >= BOARD_HEIGHT
+                || position.Min(c => c.GetX()) < 0
+                || position.Min(c => c.GetY()) < 0
+            )
             {
                 return ErrorMessage.BOUNDARY_ERROR;
             }
+
             IBoard botBoard = _boards[GetBotPlayer()][OWN_BOARD_INDEX];
             List<IShip> botFleet = _fleet[GetBotPlayer()];
             Dictionary<Coordinate, Ship> shipsOnBoard = botBoard.GetShipsOnBoard();
+
             foreach (Coordinate coordinate in position)
             {
                 if (shipsOnBoard.ContainsKey(coordinate))
@@ -302,6 +306,33 @@ namespace Battleship.Classes
                 EndGame();
                 _gameState = GameStates.GAME_OVER;
             }
+
+            if (_isPlayingWithBot && GetCurrentPlayer().IsBot())
+            {
+                TakeTurnBot();
+            }
+        }
+
+        private void TakeTurnBot()
+        {
+            bool isPickedCoordinate = false;
+
+            while (!isPickedCoordinate)
+            {
+                Coordinate position = new();
+                int x = _random.Next(0, BOARD_WIDTH);
+                int y = _random.Next(0, BOARD_HEIGHT);
+                
+                position.SetX(x);
+                position.SetY(y);
+
+                string? errorMessage = TakeTurnValidate(position);
+                if (errorMessage == null)
+                {
+                    TakeTurn(position);
+                    isPickedCoordinate = true;
+                }
+            }
         }
 
         public void SwitchTurn()
@@ -323,6 +354,7 @@ namespace Battleship.Classes
             if (_currentEnemyIndex >= _players.Count)
                 _currentEnemyIndex = 0;
 
+            // recheck this condition
             if (isPlacing && !_isPlayingWithBot && _currentPlayerIndex == 0)
             {
                 StartGame();
