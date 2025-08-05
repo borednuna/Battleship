@@ -26,27 +26,13 @@ namespace Battleship.Views
     public partial class BattleView : Page
     {
         private GameController _gameController;
-        private IBoard _ownBoard;
-        private IBoard _trackingBoard;
-        private Dictionary<Coordinate, Ship> _shipsOnOwnBoard;
 
         public BattleView(GameController gameController)
         {
             _gameController = gameController;
             InitializeComponent();
-            InitializePlayerData();
             InitializeBattleGrid();
             InitializeShipPanel();
-        }
-
-        private void InitializePlayerData()
-        {
-            var currentPlayer = _gameController.GetCurrentPlayer();
-            _ownBoard = _gameController.GetCurrentPlayerBoard()[GameController.OWN_BOARD_INDEX];
-            _shipsOnOwnBoard = _ownBoard.GetShipsOnBoard();
-            _trackingBoard = _gameController.GetCurrentPlayerBoard()[GameController.TRACKING_BOARD_INDEX];
-
-            BattlePanelTitle.Text = $"{_gameController.GetCurrentPlayer().GetName()}'s Turn";
         }
 
         private void InitializeBattleGrid()
@@ -55,6 +41,11 @@ namespace Battleship.Views
             OwnGrid.Columns = GameController.BOARD_WIDTH;
             TrackingGrid.Rows = GameController.BOARD_HEIGHT;
             TrackingGrid.Columns = GameController.BOARD_WIDTH;
+
+            List<IBoard> currentPlayerBoards = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer());
+            IBoard ownBoard = currentPlayerBoards[GameController.OWN_BOARD_INDEX];
+            IBoard trackingBoard = currentPlayerBoards[GameController.TRACKING_BOARD_INDEX];
+            Dictionary<Coordinate, IShip> shipsOnOwnBoard = ownBoard.GetShipsOnBoard();
 
             EnemyBoard.Text = $"Enemy {_gameController.GetCurrentEnemy().GetName()} Board";
 
@@ -66,11 +57,11 @@ namespace Battleship.Views
                     cellPosition.SetX(col);
                     cellPosition.SetY(row);
 
-                    bool cellIsHit = _ownBoard.GetBoard(cellPosition).IsHit();
-                    bool cellHasShip = _shipsOnOwnBoard.ContainsKey(cellPosition);
+                    bool cellIsHit = ownBoard.GetBoard(cellPosition).IsHit();
+                    bool cellHasShip = shipsOnOwnBoard.ContainsKey(cellPosition);
 
-                    bool trackingCellIsHit = _trackingBoard.GetBoard(cellPosition).IsHit();
-                    bool trackingCellHasShip = _trackingBoard.GetShipsOnBoard().ContainsKey(cellPosition);
+                    bool trackingCellIsHit = trackingBoard.GetBoard(cellPosition).IsHit();
+                    bool trackingCellHasShip = trackingBoard.GetShipsOnBoard().ContainsKey(cellPosition);
 
                     var trackingButton = new Button
                     {
@@ -84,25 +75,24 @@ namespace Battleship.Views
                     TrackingGrid.Children.Add(trackingButton);
                     trackingButton.Click += TakeTurn_Click;
 
-                    var ownButton = new Button
+                    var ownBoardButton = new Button
                     {
                         Margin = new Thickness(1),
                         Content = cellHasShip ? "🚢" : "",
                         Background = cellIsHit ? Brushes.Red : Brushes.LightGray,
                     };
 
-                    Grid.SetRow(ownButton, row);
-                    Grid.SetColumn(ownButton, col);
-                    OwnGrid.Children.Add(ownButton);
+                    Grid.SetRow(ownBoardButton, row);
+                    Grid.SetColumn(ownBoardButton, col);
+                    OwnGrid.Children.Add(ownBoardButton);
                 }
             }
         }
 
         private void InitializeShipPanel()
         {
-            List<IShip> currentPlayerShips = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayerIndex());
-            List<IShip> enemyShips = _gameController.GetPlayerFleet(_gameController.GetCurrentEnemyIndex());
-
+            List<IShip> currentPlayerShips = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayer());
+            List<IShip> enemyShips = _gameController.GetPlayerFleet(_gameController.GetCurrentEnemy());
             YourShips.Text = $"Your ships: {_gameController.RemainingShips()} ships remaining";
 
             foreach (IShip ship in currentPlayerShips)
@@ -137,9 +127,9 @@ namespace Battleship.Views
 
         private void TakeTurn_Click(object sender, RoutedEventArgs e)
         {
-            Button button = (Button)sender;
-            int row = Grid.GetRow(button);
-            int col = Grid.GetColumn(button);
+            Button targetHitButton = (Button)sender;
+            int row = Grid.GetRow(targetHitButton);
+            int col = Grid.GetColumn(targetHitButton);
 
             Coordinate targetCoordinate = new();
             targetCoordinate.SetX(col);
@@ -174,7 +164,6 @@ namespace Battleship.Views
 
         private void RepaintGrids()
         {
-            var currentPlayer = _gameController.GetCurrentPlayer();
             OwnGrid.Children.Clear();
             TrackingGrid.Children.Clear();
             OwnShipsPanel.Children.Clear();

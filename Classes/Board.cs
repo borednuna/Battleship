@@ -12,7 +12,7 @@ namespace Battleship.Classes
     public class Board : IBoard
     {
         private Cell[,] _grid;
-        private Dictionary<Coordinate, Ship> _ships;
+        private Dictionary<Coordinate, IShip> _ships;
         private BoardType _boardType;
         public Board(int width, int height, BoardType boardType)
         {
@@ -38,7 +38,7 @@ namespace Battleship.Classes
             return _grid;
         }
 
-        public Dictionary<Coordinate, Ship> GetShipsOnBoard()
+        public Dictionary<Coordinate, IShip> GetShipsOnBoard()
         {
             return _ships;
         }

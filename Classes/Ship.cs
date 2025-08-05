@@ -14,6 +14,7 @@ namespace Battleship.Classes
         string _name = type.ToString();
         int _size = ShipSizes[type];
         int _hits = 0;
+        bool _isPlaced = false;
         List<Coordinate> _coordinates = [];
 
         public static readonly Dictionary<ShipType, int> ShipSizes = new()
@@ -73,6 +74,16 @@ namespace Battleship.Classes
         public void SetHits(int hits)
         {
             _hits = hits;
+        }
+
+        public bool GetIsPlaced()
+        {
+            return _isPlaced;
+        }
+
+        public void SetIsPlaced(bool isPlaced)
+        {
+            _isPlaced = isPlaced;
         }
     }
 }
