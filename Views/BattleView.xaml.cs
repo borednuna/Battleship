@@ -157,7 +157,7 @@ namespace Battleship.Views
 
             if (_gameController.GetCurrentGameState() == GameStates.GAME_OVER)
             {
-                NavigationService?.Navigate(new Uri("/Views/GameOverView.xaml", UriKind.Relative));
+                NavigationService?.Navigate(new GameOverView(_gameController));
             }
             else
             {

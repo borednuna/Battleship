@@ -22,6 +22,7 @@ namespace Battleship
         {
             InitializeComponent();
             GameController gameController = new();
+            gameController.Reset();
 
             var registrationView = new RegisterView(gameController);
             MainFrame.Navigate(registrationView);

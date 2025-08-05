@@ -234,8 +234,6 @@ namespace Battleship.Classes
 
         public void TakeTurn(Coordinate position)
         {
-            Debug.WriteLine($"Current player index: {_currentPlayerIndex}");
-            Debug.WriteLine($"Enemy index: {_currentPlayerIndex}");
             OnShotFired?.Invoke(GetCurrentPlayer(), position);
             RegisterHit(position);
             SwitchTurn();
@@ -276,8 +274,6 @@ namespace Battleship.Classes
         public void SwitchTurn()
         {
             bool isPlacing = _gameState == GameStates.PLACING_SHIPS;
-
-            Debug.WriteLine($"Players count: {_players.Count}");
 
             if (isPlacing && _isPlayingWithBot)
             {

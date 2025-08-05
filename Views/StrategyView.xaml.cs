@@ -113,6 +113,9 @@ namespace Battleship.Views
 
         private void RepaintBoard()
         {
+            int currentPlayerIndex = _gameController.GetCurrentPlayerIndex();
+            int enemyPlayerIndex = _gameController.GetCurrentEnemyIndex();
+
             for (int row = 0; row < GameController.BOARD_WIDTH; row++)
             {
                 for (int col = 0; col < GameController.BOARD_HEIGHT; col++)
