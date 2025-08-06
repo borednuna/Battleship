@@ -6,21 +6,26 @@
       xmlns:local="clr-namespace:Battleship.Views"
       mc:Ignorable="d" 
       d:DesignHeight="530" d:DesignWidth="800"
-      Title="RegisterView">
+      Title="RegisterView"
+      Background="#f7f9fc">
 
-    <StackPanel>
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
         <StackPanel x:Name="NameFieldsPanel">
             <TextBlock Text="Welcome to Battleship!"
-                FontSize="24"
+                FontSize="28"
+                FontWeight="Bold"
                 HorizontalAlignment="Center"
-                Margin="10"/>
+                Margin="10,10,10,5"/>
             <TextBlock Text="Register Players"
-                FontSize="15"
-                HorizontalAlignment="Center"/>
+                FontSize="16"
+                FontWeight="SemiBold"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,20"/>
         </StackPanel>
+
         <StackPanel x:Name="ButtonPanel"
             HorizontalAlignment="Center"
-            Orientation="Horizontal">
-        </StackPanel>
+            Orientation="Horizontal"
+            Margin="0,20,0,0"/>
     </StackPanel>
 </Page>

@@ -144,9 +144,29 @@ namespace Battleship.Views
 
                 int shipHeadButtonRow = Grid.GetRow(shipHeadButton);
                 int shipHeadButtonColumn = Grid.GetColumn(shipHeadButton);
-                int shipSize = Ship.GetShipSize(_selectedShipType.Value);
+                Coordinate cellPosition = new();
+                cellPosition.SetX(shipHeadButtonColumn);
+                cellPosition.SetY(shipHeadButtonRow);
 
+                IBoard currentPlayerBoard = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer())[GameController.OWN_BOARD_INDEX];
+                Cell cell = currentPlayerBoard.GetBoard(cellPosition);
+                IShip? cellShip = cell.GetShip();
+                // get ship nya gaada
+
+                if (cellShip == null)
+                {
+                    return;
+                }
+
+                int shipSize = cellShip.GetSize();
+                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
                 RepaintBoard();
+
                 for (int i = 0; i < shipSize; i++)
                 {
                     Button? shipBodyButton;
@@ -194,27 +214,42 @@ namespace Battleship.Views
             }
 
             Button shipHeadButton = (Button)sender;
-            int shipSize = Ship.GetShipSize(_selectedShipType.Value);
-            int shipHeadRow = Grid.GetRow(shipHeadButton);
-            int shipHeadColumn = Grid.GetColumn(shipHeadButton);
+            shipHeadButton.Background = Brushes.LightSalmon;
+            int shipHeadButtonRow = Grid.GetRow(shipHeadButton);
+            int shipHeadButtonColumn = Grid.GetColumn(shipHeadButton);
+
+            Coordinate cellPosition = new();
+            cellPosition.SetX(shipHeadButtonColumn);
+            cellPosition.SetY(shipHeadButtonRow);
+
+            IBoard currentPlayerBoard = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer())[GameController.OWN_BOARD_INDEX];
+            Cell cell = currentPlayerBoard.GetBoard(cellPosition);
+            IShip? cellShip = cell.GetShip();
+
+            if (cellShip == null)
+            {
+                return;
+            }
+
+            int shipSize = cellShip.GetSize();
             List<Coordinate> occupyCoordinate = [];
 
             for (int i = 0; i < shipSize; i++)
             {
                 if (_isShipVertical)
                 {
-                    int shipBodyRow = shipHeadRow + i;
+                    int shipBodyRow = shipHeadButtonRow + i;
                     Coordinate shipBodyCoordinate = new();
-                    shipBodyCoordinate.SetX(shipHeadColumn);
+                    shipBodyCoordinate.SetX(shipHeadButtonColumn);
                     shipBodyCoordinate.SetY(shipBodyRow);
                     occupyCoordinate.Add(shipBodyCoordinate);
                 }
                 else
                 {
-                    int shipBodyColumn = shipHeadColumn + i;
+                    int shipBodyColumn = shipHeadButtonColumn + i;
                     Coordinate shipBodyCoordinate = new();
                     shipBodyCoordinate.SetX(shipBodyColumn);
-                    shipBodyCoordinate.SetY(shipHeadRow);
+                    shipBodyCoordinate.SetY(shipHeadButtonRow);
                     occupyCoordinate.Add(shipBodyCoordinate);
                 }
             }
@@ -280,6 +315,11 @@ namespace Battleship.Views
                     {
                         _gameController.PlaceShipBot(ship.GetType(), shipCoordinates);
                         isPlaced = true;
+
+                        foreach (Coordinate pos in shipCoordinates)
+                        {
+                            Debug.WriteLine($"Placing {ship.GetType()} at ({pos.GetX()}, {pos.GetY()})");
+                        }
                     }
                 }
             }

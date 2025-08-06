@@ -41,27 +41,42 @@ namespace Battleship.Views
         {
             _playerNameFields = [];
             AddPlayerFormField();
-            
+
+            // Add Player Button
             Button addPlayerField_Click = new Button
             {
                 Content = "Add Player",
-                Width = 100,
-                Height = 20,
-                Background = Brushes.LightGreen,
-                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = 130,
+                Height = 35,
+                Background = new SolidColorBrush(Color.FromRgb(46, 204, 113)), // Light green
+                Foreground = Brushes.White,
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 14,
+                BorderThickness = new Thickness(0),
+                Margin = new Thickness(5),
+                Padding = new Thickness(10),
+                Cursor = Cursors.Hand
             };
-
+            addPlayerField_Click.Resources["ButtonCornerRadius"] = new CornerRadius(8);
             ButtonPanel.Children.Add(addPlayerField_Click);
             addPlayerField_Click.Click += AddPlayers_Click;
 
+            // Register Button
             Button registerButton = new Button
             {
                 Content = "Start Game!",
-                Width = 100,
-                Height = 20,
-                Margin = new(20),
-                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = 130,
+                Height = 35,
+                Background = new SolidColorBrush(Color.FromRgb(52, 152, 219)), // Blue
+                Foreground = Brushes.White,
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 14,
+                BorderThickness = new Thickness(0),
+                Margin = new Thickness(5),
+                Padding = new Thickness(10),
+                Cursor = Cursors.Hand
             };
+            registerButton.Resources["ButtonCornerRadius"] = new CornerRadius(8);
             ButtonPanel.Children.Add(registerButton);
             registerButton.Click += RegisterPlayers_Click;
         }
@@ -85,13 +100,17 @@ namespace Battleship.Views
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 5, 0, 5)
             };
 
             TextBlock playerLabel = new TextBlock
             {
                 Text = $"Player {_playersCounter}:",
                 Margin = new Thickness(5, 0, 5, 0),
-                VerticalAlignment = VerticalAlignment.Center
+                VerticalAlignment = VerticalAlignment.Center,
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 14,
+                Foreground = Brushes.Black
             };
 
             TextBox playerNameField = new TextBox
@@ -99,7 +118,12 @@ namespace Battleship.Views
                 Name = $"Player{_playersCounter}Textbox",
                 Width = 200,
                 Height = 30,
-                Margin = new(10),
+                Margin = new Thickness(10),
+                FontSize = 13,
+                Padding = new Thickness(5),
+                BorderThickness = new Thickness(1),
+                BorderBrush = Brushes.Gray,
+                Background = Brushes.White
             };
 
             playerNameStack.Children.Add(playerLabel);

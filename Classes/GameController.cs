@@ -418,7 +418,7 @@ namespace Battleship.Classes
             IBoard currentEnemyBoard = _boards[_players[_currentEnemyIndex]][OWN_BOARD_INDEX];
             Cell enemyCell = currentEnemyBoard.GetBoard(position);
             IShip? enemyShipOnCell = enemyCell.GetShip();
-            return enemyShipOnCell != null;
+            return enemyShipOnCell != null; // TODO: better dimasukin variable
         }
 
         public bool AllShipsSunk()

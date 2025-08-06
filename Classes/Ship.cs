@@ -12,24 +12,10 @@ namespace Battleship.Classes
     public class Ship(ShipType type) : IShip
     {
         string _name = type.ToString();
-        int _size = ShipSizes[type];
+        int _size = (int)type;
         int _hits = 0;
         bool _isPlaced = false;
         List<Coordinate> _coordinates = [];
-
-        public static readonly Dictionary<ShipType, int> ShipSizes = new()
-        {
-            { ShipType.CARRIER, 5 },
-            { ShipType.BATTLESHIP, 4 },
-            { ShipType.CRUISER, 3 },
-            { ShipType.SUBMARINE, 3 },
-            { ShipType.DESTROYER, 2 }
-        };
-
-        public static int GetShipSize(ShipType type)
-        {
-            return ShipSizes.TryGetValue(type, out int size) ? size : 0;
-        }
 
         public void SetName(string name)
         {

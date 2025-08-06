@@ -12,7 +12,7 @@ namespace Battleship.Classes
     public class Board : IBoard
     {
         private Cell[,] _grid;
-        private Dictionary<Coordinate, IShip> _ships;
+        private Dictionary<Coordinate, IShip> _ships; // TODO: better pake yang cell
         private BoardType _boardType;
         public Board(int width, int height, BoardType boardType)
         {

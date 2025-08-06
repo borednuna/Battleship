@@ -48,6 +48,7 @@ namespace Battleship.Views
             Dictionary<Coordinate, IShip> shipsOnOwnBoard = ownBoard.GetShipsOnBoard();
 
             EnemyBoard.Text = $"Enemy {_gameController.GetCurrentEnemy().GetName()} Board";
+            BattlePanelTitle.Text = $"Battle - {_gameController.GetCurrentPlayer().GetName()}'s Turn";
 
             for (int row = 0; row < GameController.BOARD_WIDTH; row++)
             {
@@ -153,10 +154,12 @@ namespace Battleship.Views
             {
                 if (_gameController.GetIsPlayingWithBot())
                 {
+                    Thread.Sleep(500);
                     RepaintGrids();
                 }
                 else
                 {
+                    Thread.Sleep(500);
                     NavigationService?.Navigate(new BattleView(_gameController));
                 }
             }
