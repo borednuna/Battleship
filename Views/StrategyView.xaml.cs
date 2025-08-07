@@ -139,6 +139,18 @@ namespace Battleship.Views
         {
             if (_selectedShipType != null)
             {
+                ShipType shipType = (ShipType)_selectedShipType;
+                IShip? selectedShip = _gameController.GetShipByType(shipType, _gameController.GetCurrentPlayer());
+
+                if (selectedShip == null)
+                {
+                    MessageBox.Show(ErrorMessage.SHIP_NOT_FOUND_ERROR);
+                    return;
+                }
+
+                int shipSize = selectedShip.GetSize();
+                RepaintBoard();
+
                 Button shipHeadButton = (Button)sender;
                 shipHeadButton.Background = Brushes.LightSalmon;
 
@@ -147,25 +159,6 @@ namespace Battleship.Views
                 Coordinate cellPosition = new();
                 cellPosition.SetX(shipHeadButtonColumn);
                 cellPosition.SetY(shipHeadButtonRow);
-
-                IBoard currentPlayerBoard = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer())[GameController.OWN_BOARD_INDEX];
-                Cell cell = currentPlayerBoard.GetBoard(cellPosition);
-                IShip? cellShip = cell.GetShip();
-                // get ship nya gaada
-
-                if (cellShip == null)
-                {
-                    return;
-                }
-
-                int shipSize = cellShip.GetSize();
-                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-                Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAA");
-                RepaintBoard();
 
                 for (int i = 0; i < shipSize; i++)
                 {
@@ -213,6 +206,18 @@ namespace Battleship.Views
                 return;
             }
 
+            ShipType shipType = (ShipType)_selectedShipType;
+            IShip? selectedShip = _gameController.GetShipByType(shipType, _gameController.GetCurrentPlayer());
+
+            if (selectedShip == null)
+            {
+                MessageBox.Show(ErrorMessage.SHIP_NOT_FOUND_ERROR);
+                return;
+            }
+
+            int shipSize = selectedShip.GetSize();
+            List<Coordinate> occupyCoordinate = [];
+
             Button shipHeadButton = (Button)sender;
             shipHeadButton.Background = Brushes.LightSalmon;
             int shipHeadButtonRow = Grid.GetRow(shipHeadButton);
@@ -221,18 +226,6 @@ namespace Battleship.Views
             Coordinate cellPosition = new();
             cellPosition.SetX(shipHeadButtonColumn);
             cellPosition.SetY(shipHeadButtonRow);
-
-            IBoard currentPlayerBoard = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer())[GameController.OWN_BOARD_INDEX];
-            Cell cell = currentPlayerBoard.GetBoard(cellPosition);
-            IShip? cellShip = cell.GetShip();
-
-            if (cellShip == null)
-            {
-                return;
-            }
-
-            int shipSize = cellShip.GetSize();
-            List<Coordinate> occupyCoordinate = [];
 
             for (int i = 0; i < shipSize; i++)
             {

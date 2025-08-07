@@ -88,6 +88,21 @@ namespace Battleship.Classes
             return true;
         }
 
+        public IShip? GetShipByType(ShipType type, IPlayer player)
+        {
+            List<IShip> playerFleet = GetPlayerFleet(player);
+
+            foreach (IShip ship in playerFleet)
+            {
+                if (ship.GetType() == type)
+                {
+                    return ship;
+                }
+            }
+
+            return null;
+        }
+
         public void AddPlayer(IPlayer player)
         {
             _players.Add(player);
