@@ -42,13 +42,12 @@ namespace Battleship.Views
             _playerNameFields = [];
             AddPlayerFormField();
 
-            // Add Player Button
             Button addPlayerField_Click = new Button
             {
                 Content = "Add Player",
                 Width = 130,
                 Height = 35,
-                Background = new SolidColorBrush(Color.FromRgb(46, 204, 113)), // Light green
+                Background = new SolidColorBrush(Color.FromRgb(46, 204, 113)),
                 Foreground = Brushes.White,
                 FontWeight = FontWeights.SemiBold,
                 FontSize = 14,
@@ -61,13 +60,12 @@ namespace Battleship.Views
             ButtonPanel.Children.Add(addPlayerField_Click);
             addPlayerField_Click.Click += AddPlayers_Click;
 
-            // Register Button
             Button registerButton = new Button
             {
                 Content = "Start Game!",
                 Width = 130,
                 Height = 35,
-                Background = new SolidColorBrush(Color.FromRgb(52, 152, 219)), // Blue
+                Background = new SolidColorBrush(Color.FromRgb(52, 152, 219)),
                 Foreground = Brushes.White,
                 FontWeight = FontWeights.SemiBold,
                 FontSize = 14,

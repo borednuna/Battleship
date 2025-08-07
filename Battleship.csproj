@@ -8,4 +8,12 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Assets\sea_bg.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\sea_bg.png" />
+  </ItemGroup>
+
 </Project>

@@ -5,47 +5,135 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Battleship.Views"
       mc:Ignorable="d" 
+      UseLayoutRounding="True"
+      SnapsToDevicePixels="True"
       d:DesignHeight="530" d:DesignWidth="800"
       Title="StrategyView">
+    <Page.Resources>
+        <Style TargetType="Button" x:Key="BaseButton">
+            <Setter Property="Background" Value="#333"/>
+            <Setter Property="Foreground" Value="FloralWhite"/>
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#444"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#222"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#666"/>
+                                <Setter Property="Foreground" Value="#AAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="ShipSelectionButton" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Margin" Value="5" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="SwitchButton" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background" Value="DodgerBlue"/>
+            <Setter Property="Margin" Value="5" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="ContinueButton" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background" Value="OrangeRed"/>
+            <Setter Property="Margin" Value="5" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="BoardGridButton" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background" Value="SkyBlue" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+    </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Rectangle Fill="White" />
+        <Rectangle>
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/Assets/sea_bg.png" Opacity="0.8" Stretch="UniformToFill"/>
+            </Rectangle.Fill>
+        </Rectangle>
 
-        <TextBlock Grid.Row="0"
-           x:Name="StrategyPanelTitle"
-           FontSize="24" 
-           HorizontalAlignment="Center" 
-           Margin="10"/>
+        <Grid Margin="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1" ShowGridLines="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <Border Background="#CCFFFFFF" Padding="5" CornerRadius="10" Opacity="0.8"
+                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
+                <StackPanel Grid.Row="0">
+                    <TextBlock x:Name="StrategyPanelTitle"
+                        FontSize="24" 
+                        HorizontalAlignment="Center" 
+                        FontWeight="SemiBold"/>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Text="Pick ship from the left panel and place it on the board on the right side."
+                        FontSize="15"
+                        Margin="10"/>
+                </StackPanel>
+            </Border>
 
-            <WrapPanel Grid.Column="0"
-                 x:Name="ShipSelectionPanel"
-                 Orientation="Horizontal"/>
+            <Grid Grid.Row="1" ShowGridLines="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <UniformGrid Grid.Column="1" 
-                 x:Name="OwnGrid" 
-                 Margin="5"/>
+                <WrapPanel Grid.Column="0"
+                     x:Name="ShipSelectionPanel"
+                     Orientation="Horizontal"/>
+
+                <Grid Grid.Column="1" 
+                      x:Name="OwnGrid"
+                      SnapsToDevicePixels="True"
+                      UseLayoutRounding="True"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      Margin="0"/>
+            </Grid>
+
+            <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
+                <Button Content="Switch Orientation"
+                    Click="SwitchOrientation_Click"
+                    Style="{StaticResource SwitchButton}" />
+
+                <Button Content="Continue"
+                    Click="Continue_Click"
+                    Style="{StaticResource ContinueButton}" />
+            </WrapPanel>
         </Grid>
-
-        <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
-            <Button Content="Switch Orientation"
-                Click="SwitchOrientation_Click"
-                Margin="10, 0, 10, 0"
-                Padding="10,5" />
-
-            <Button Content="Continue"
-                Click="Continue_Click"
-                Margin="10, 0, 10, 0"
-                Padding="10,5" />
-        </WrapPanel>
     </Grid>
 </Page>

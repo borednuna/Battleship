@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Battleship"
         mc:Ignorable="d"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
         Title="MainWindow" Height="530" Width="800">
     <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
 </Window>

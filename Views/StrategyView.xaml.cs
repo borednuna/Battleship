@@ -39,8 +39,18 @@ namespace Battleship.Views
         private void InitializeBattleGrid()
         {
             StrategyPanelTitle.Text = $"{_gameController.GetCurrentPlayer().GetName()}'s Strategy";
-            OwnGrid.Rows = GameController.BOARD_HEIGHT;
-            OwnGrid.Columns = GameController.BOARD_WIDTH;
+
+            OwnGrid.RowDefinitions.Clear();
+            OwnGrid.ColumnDefinitions.Clear();
+
+            for (int i = 0; i < GameController.BOARD_HEIGHT; i++)
+            {
+                OwnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            }
+            for (int i = 0; i < GameController.BOARD_WIDTH; i++)
+            {
+                OwnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            }
 
             if (_gameController.GetIsPlayingWithBot())
             {
@@ -53,8 +63,7 @@ namespace Battleship.Views
                 {
                     var button = new Button
                     {
-                        Margin = new Thickness(1),
-                        Background = Brushes.LightGray,
+                        Style = (Style)FindResource("BoardGridButton"),
                     };
 
                     button.MouseEnter += PreviewShip_MouseEnter;
@@ -77,16 +86,12 @@ namespace Battleship.Views
             foreach (IShip ship in currentPlayerFleet)
             {
                 bool isPlaced = ship.GetIsPlaced();
-                Debug.WriteLine($"Ship {ship.GetShipType()} is {isPlaced}");
                 var cellButton = new Button
                 {
-                    Margin = new Thickness(1),
-                    Height = 100,
-                    Width = 150,
                     Name = ship.GetShipType().ToString(),
-                    Background = Brushes.LightGray,
                     IsEnabled = !isPlaced,
-                    Content = $"{ship.GetShipType().ToString()} ({ship.GetSize().ToString()})",
+                    Content = $"{ship.GetShipType()} ({ship.GetSize()})",
+                    Style = (Style)FindResource("ShipSelectionButton"),
                 };
 
                 cellButton.Click += PickShip_Click;
@@ -136,11 +141,12 @@ namespace Battleship.Views
                     {
                         if (currentPlayerBoard.GetBoard(cellCoordinate).GetShip() != null)
                         {
-                            cellButton.Background = Brushes.DarkSeaGreen;
+                            cellButton.Background = Brushes.OrangeRed;
+                            cellButton.Opacity = 1;
                         }
                         else
                         {
-                            cellButton.Background = Brushes.LightGray;
+                            cellButton.Background = Brushes.SkyBlue;
                         }
                     }
                 }
