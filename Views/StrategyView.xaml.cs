@@ -67,18 +67,26 @@ namespace Battleship.Views
                 }
             }
 
+            PaintShipPanel();
+        }
+
+        private void PaintShipPanel()
+        {
             List<IShip> currentPlayerFleet = _gameController.GetPlayerFleet(_gameController.GetCurrentPlayer());
 
             foreach (IShip ship in currentPlayerFleet)
             {
+                bool isPlaced = ship.GetIsPlaced();
+                Debug.WriteLine($"Ship {ship.GetShipType()} is {isPlaced}");
                 var cellButton = new Button
                 {
                     Margin = new Thickness(1),
                     Height = 100,
                     Width = 150,
-                    Name = ship.GetType().ToString(),
+                    Name = ship.GetShipType().ToString(),
                     Background = Brushes.LightGray,
-                    Content = $"{ship.GetType().ToString()} ({ship.GetSize().ToString()})",
+                    IsEnabled = !isPlaced,
+                    Content = $"{ship.GetShipType().ToString()} ({ship.GetSize().ToString()})",
                 };
 
                 cellButton.Click += PickShip_Click;
@@ -106,7 +114,11 @@ namespace Battleship.Views
 
         private void RepaintBoard()
         {
-            IBoard currentPlayerBoard = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer())[GameController.OWN_BOARD_INDEX];
+            IBoard? currentPlayerBoard = _gameController.GetPlayerBoardByType(_gameController.GetCurrentPlayer(), BoardType.OWN_BOARD);
+            if (currentPlayerBoard == null)
+            {
+                return;
+            }
 
             for (int row = 0; row < GameController.BOARD_WIDTH; row++)
             {
@@ -247,16 +259,20 @@ namespace Battleship.Views
                 }
             }
 
-            string? shipPlacementError = _gameController.PlaceShipValidate(_selectedShipType, occupyCoordinate);
+            string? shipPlacementError = _gameController.PlaceShipValidate(_gameController.GetCurrentPlayer(), _selectedShipType, occupyCoordinate);
             if (shipPlacementError != null)
             {
                 MessageBox.Show(shipPlacementError);
                 return;
             }
 
-            bool _ = _gameController.PlaceShip((ShipType)_selectedShipType, occupyCoordinate);
+            bool _ = _gameController.PlaceShip(_gameController.GetCurrentPlayer(), (ShipType)_selectedShipType, occupyCoordinate);
 
             RepaintBoard();
+
+            ShipSelectionPanel.Children.Clear();
+            PaintShipPanel();
+
             foreach (Button selectedShipOption in ShipSelectionPanel.Children)
             {
                 if (selectedShipOption.Name == _selectedShipType.ToString())
@@ -279,7 +295,6 @@ namespace Battleship.Views
             await Task.Yield();
 
             List<IShip> botFleet = _gameController.GetPlayerFleet(botPlayer);
-            IBoard botBoard = _gameController.GetPlayerBoards(botPlayer)[GameController.OWN_BOARD_INDEX];
             Random random = _gameController.GetRandomInstance();
 
             foreach (IShip ship in botFleet)
@@ -303,16 +318,11 @@ namespace Battleship.Views
                         shipCoordinates.Add(shipCoordinate);
                     }
 
-                    string? shipPlacementError = _gameController.PlaceShipValidateBot(ship.GetType(), shipCoordinates);
+                    string? shipPlacementError = _gameController.PlaceShipValidate(botPlayer, ship.GetShipType(), shipCoordinates);
                     if (shipPlacementError == null)
                     {
-                        _gameController.PlaceShipBot(ship.GetType(), shipCoordinates);
+                        _gameController.PlaceShip(botPlayer, ship.GetShipType(), shipCoordinates);
                         isPlaced = true;
-
-                        foreach (Coordinate pos in shipCoordinates)
-                        {
-                            Debug.WriteLine($"Placing {ship.GetType()} at ({pos.GetX()}, {pos.GetY()})");
-                        }
                     }
                 }
             }

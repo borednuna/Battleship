@@ -171,14 +171,15 @@ namespace Battleship.Views
         private List<IShip> CreateFleet()
         {
             List<IShip> ships = [];
+
             foreach (ShipType shipType in Enum.GetValues<ShipType>())
             {
-                Ship ship = new(shipType);
-                ships.Add(ship);
+                ships.Add(new Ship(shipType));
             }
 
             return ships;
         }
+
 
         private List<IBoard> CreateBoards()
         {

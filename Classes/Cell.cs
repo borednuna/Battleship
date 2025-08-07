@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Battleship.Classes
 {
-    public class Cell
+    public class Cell (Coordinate position)
     {
-        Coordinate _position;
-        bool _isHit;
-        Ship? _ship;
+        Coordinate _position = position;
+        bool _isHit = false;
+        Ship? _ship = null;
 
         public Coordinate GetPosition()
         {

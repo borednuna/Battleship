@@ -42,13 +42,23 @@ namespace Battleship.Views
             TrackingGrid.Rows = GameController.BOARD_HEIGHT;
             TrackingGrid.Columns = GameController.BOARD_WIDTH;
 
-            List<IBoard> currentPlayerBoards = _gameController.GetPlayerBoards(_gameController.GetCurrentPlayer());
-            IBoard ownBoard = currentPlayerBoards[GameController.OWN_BOARD_INDEX];
-            IBoard trackingBoard = currentPlayerBoards[GameController.TRACKING_BOARD_INDEX];
-            Dictionary<Coordinate, IShip> shipsOnOwnBoard = ownBoard.GetShipsOnBoard();
+            IBoard? ownBoard = _gameController.GetPlayerBoardByType(_gameController.GetCurrentPlayer(), BoardType.OWN_BOARD);
+            if (ownBoard == null)
+            {
+                return;
+            }
+
+            IBoard? trackingBoard = _gameController.GetPlayerBoardByType(_gameController.GetCurrentPlayer(), BoardType.TRACKING_BOARD);
+            if (trackingBoard == null)
+            {
+                return;
+            }
 
             EnemyBoard.Text = $"Enemy {_gameController.GetCurrentEnemy().GetName()} Board";
             BattlePanelTitle.Text = $"Battle - {_gameController.GetCurrentPlayer().GetName()}'s Turn";
+
+            Dictionary<Coordinate, IShip> ownBoardShips = ownBoard.GetAllShipCoordinates();
+            Dictionary<Coordinate, IShip> trackingBoardShips = trackingBoard.GetAllShipCoordinates();
 
             for (int row = 0; row < GameController.BOARD_WIDTH; row++)
             {
@@ -59,10 +69,10 @@ namespace Battleship.Views
                     cellPosition.SetY(row);
 
                     bool cellIsHit = ownBoard.GetBoard(cellPosition).IsHit();
-                    bool cellHasShip = shipsOnOwnBoard.ContainsKey(cellPosition);
+                    bool cellHasShip = ownBoardShips.ContainsKey(cellPosition);
 
                     bool trackingCellIsHit = trackingBoard.GetBoard(cellPosition).IsHit();
-                    bool trackingCellHasShip = trackingBoard.GetShipsOnBoard().ContainsKey(cellPosition);
+                    bool trackingCellHasShip = trackingBoardShips.ContainsKey(cellPosition);
 
                     var trackingButton = new Button
                     {
@@ -100,7 +110,7 @@ namespace Battleship.Views
             {
                 TextBlock shipBlock = new TextBlock
                 {
-                    Text = $"{ship.GetName()} - ({ship.GetHits()}/{ship.GetSize()})",
+                    Text = $"{ship.GetShipType()} - ({ship.GetHits()}/{ship.GetSize()})",
                     Margin = new Thickness(5),
                     FontSize = 13,
                     Foreground = Brushes.Black,
@@ -115,7 +125,7 @@ namespace Battleship.Views
             {
                 TextBlock shipBlock = new TextBlock
                 {
-                    Text = $"{ship.GetName()}",
+                    Text = $"{ship.GetShipType()}",
                     Margin = new Thickness(5),
                     FontSize = 13,
                     Foreground = Brushes.Black,
@@ -152,14 +162,13 @@ namespace Battleship.Views
             }
             else
             {
+                Thread.Sleep(500);
                 if (_gameController.GetIsPlayingWithBot())
                 {
-                    Thread.Sleep(500);
                     RepaintGrids();
                 }
                 else
                 {
-                    Thread.Sleep(500);
                     NavigationService?.Navigate(new BattleView(_gameController));
                 }
             }

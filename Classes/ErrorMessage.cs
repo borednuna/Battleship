@@ -17,5 +17,6 @@ namespace Battleship.Classes
         public static readonly string NO_BOT_FOUND_ERROR = "No bot found.";
         public static readonly string CONFIRM_TO_PLAY_WITH_BOT = "Are you sure you want to play with a bot?";
         public static readonly string MAX_PLAYERS_AMOUNT_ERROR = "Maximum players amount exceed!";
+        public static readonly string BOARD_NOT_FOUND_ERROR = "Board not found.";
     }
 }

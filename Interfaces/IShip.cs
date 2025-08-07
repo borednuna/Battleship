@@ -10,11 +10,8 @@ namespace Battleship.Interfaces
 {
     public interface IShip
     {
-        public ShipType GetType();
-        public string GetName();
-        public void SetName(string name);
+        public ShipType GetShipType();
         public int GetSize();
-        public void SetSize(int size);
         public List<Coordinate> GetPositions();
         public void SetPositions(List<Coordinate> positions);
         public int GetHits();
