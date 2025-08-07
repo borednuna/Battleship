@@ -16,7 +16,8 @@ namespace Battleship.Classes
     {
         public const int BOARD_WIDTH = 10;
         public const int BOARD_HEIGHT = 10;
-        public const int MAX_PLAYERS_AMOUNT = 5;
+        public const int MAX_PLAYERS_AMOUNT = 3;
+        public const string DEFAULT_SHIP_PATH = "silhouette.png";
 
         int _currentPlayerIndex;
         int _currentEnemyIndex;

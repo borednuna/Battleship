@@ -26,9 +26,23 @@ namespace Battleship.Classes
             { ShipType.DESTROYER, 2 }
         };
 
+        private static readonly Dictionary<ShipType, string> shipAssets = new()
+        {
+            { ShipType.CARRIER, "carrier.png" },
+            { ShipType.BATTLESHIP, "battleship.png" },
+            { ShipType.CRUISER, "cruiser.png" },
+            { ShipType.SUBMARINE, "submarine.png" },
+            { ShipType.DESTROYER, "destroyer.png" },
+        };
+
         private static int GetShipSize(ShipType type)
         {
             return ShipSizes.TryGetValue(type, out int size) ? size : 0;
+        }
+
+        public static string GetShipAsset(ShipType type)
+        {
+            return shipAssets[type];
         }
 
         public ShipType GetShipType()

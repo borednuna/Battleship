@@ -158,7 +158,6 @@ namespace Battleship.Views
                 _gameController.AddPlayer(botPlayer);
                 _gameController.AddPlayerFleet(botPlayer, CreateFleet());
                 _gameController.AddPlayerBoard(botPlayer, CreateBoards());
-                _gameController.SetIsPlayingWithBot(true);
             }
 
             _gameController.SetGameState(GameStates.PLACING_SHIPS);
@@ -177,7 +176,6 @@ namespace Battleship.Views
 
             return ships;
         }
-
 
         private List<IBoard> CreateBoards()
         {

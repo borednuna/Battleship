@@ -43,16 +43,10 @@ namespace Battleship.Views
             TrackingGrid.Columns = GameController.BOARD_WIDTH;
 
             IBoard? ownBoard = _gameController.GetPlayerBoardByType(_gameController.GetCurrentPlayer(), BoardType.OWN_BOARD);
-            if (ownBoard == null)
-            {
-                return;
-            }
+            if (ownBoard == null) return;
 
             IBoard? trackingBoard = _gameController.GetPlayerBoardByType(_gameController.GetCurrentPlayer(), BoardType.TRACKING_BOARD);
-            if (trackingBoard == null)
-            {
-                return;
-            }
+            if (trackingBoard == null) return;
 
             EnemyBoard.Text = $"Enemy {_gameController.GetCurrentEnemy().GetName()} Board";
             BattlePanelTitle.Text = $"Battle - {_gameController.GetCurrentPlayer().GetName()}'s Turn";
@@ -68,34 +62,85 @@ namespace Battleship.Views
                     cellPosition.SetX(col);
                     cellPosition.SetY(row);
 
-                    bool cellIsHit = ownBoard.GetBoard(cellPosition).IsHit();
-                    bool cellHasShip = ownBoardShips.ContainsKey(cellPosition);
-
                     bool trackingCellIsHit = trackingBoard.GetBoard(cellPosition).IsHit();
                     bool trackingCellHasShip = trackingBoardShips.ContainsKey(cellPosition);
 
+                    var trackingCellGrid = new Grid();
+
                     var trackingButton = new Button
                     {
-                        Margin = new Thickness(1),
-                        Background = trackingCellIsHit ? trackingCellHasShip ? Brushes.Green : Brushes.Red : Brushes.LightYellow,
-                        Content = trackingCellHasShip ? "🚢" : "",
+                        Style = (Style)FindResource("BoardGridButton"),
+                        FontFamily = new FontFamily("Segoe UI Emoji"),
+                        Background = trackingCellIsHit
+                            ? trackingCellHasShip ? Brushes.Green : Brushes.Red
+                            : Brushes.SkyBlue,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        Tag = cellPosition
                     };
+
+                    trackingCellGrid.Children.Add(trackingButton);
+
+                    if (trackingCellHasShip)
+                    {
+                        string iconPath = $"pack://application:,,,/Assets/{GameController.DEFAULT_SHIP_PATH}";
+                        var icon = new Image
+                        {
+                            Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute)),
+                            Width = 32,
+                            Height = 32,
+                            Stretch = Stretch.Uniform,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            IsHitTestVisible = false
+                        };
+                        trackingCellGrid.Children.Add(icon);
+                    }
 
                     Grid.SetRow(trackingButton, row);
                     Grid.SetColumn(trackingButton, col);
                     TrackingGrid.Children.Add(trackingButton);
                     trackingButton.Click += TakeTurn_Click;
 
+                    bool cellIsHit = ownBoard.GetBoard(cellPosition).IsHit();
+                    bool cellHasShip = ownBoardShips.ContainsKey(cellPosition);
+                    IShip? ship = ownBoard.GetBoard(cellPosition).GetShip();
+
+                    var cellGrid = new Grid();
+
                     var ownBoardButton = new Button
                     {
-                        Margin = new Thickness(1),
-                        Content = cellHasShip ? "🚢" : "",
-                        Background = cellIsHit ? Brushes.Red : Brushes.LightGray,
+                        Style = (Style)FindResource("BoardGridButton"),
+                        FontFamily = new FontFamily("Segoe UI Emoji"),
+                        Background = cellIsHit
+                            ? cellHasShip ? Brushes.Green : Brushes.Red
+                            : Brushes.SkyBlue,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        Tag = cellPosition
                     };
 
-                    Grid.SetRow(ownBoardButton, row);
-                    Grid.SetColumn(ownBoardButton, col);
-                    OwnGrid.Children.Add(ownBoardButton);
+                    cellGrid.Children.Add(ownBoardButton);
+
+                    if (cellHasShip && ship != null)
+                    {
+                        string iconPath = $"pack://application:,,,/Assets/{Ship.GetShipAsset(ship.GetShipType())}";
+                        var icon = new Image
+                        {
+                            Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute)),
+                            Width = 32,
+                            Height = 32,
+                            Stretch = Stretch.Uniform,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            IsHitTestVisible = false
+                        };
+                        cellGrid.Children.Add(icon);
+                    }
+
+                    Grid.SetRow(cellGrid, row);
+                    Grid.SetColumn(cellGrid, col);
+                    OwnGrid.Children.Add(cellGrid);
                 }
             }
         }
@@ -108,31 +153,66 @@ namespace Battleship.Views
 
             foreach (IShip ship in currentPlayerShips)
             {
-                TextBlock shipBlock = new TextBlock
+                StackPanel shipPanelStack = new StackPanel()
                 {
-                    Text = $"{ship.GetShipType()} - ({ship.GetHits()}/{ship.GetSize()})",
-                    Margin = new Thickness(5),
-                    FontSize = 13,
-                    Foreground = Brushes.Black,
-                    Padding = new Thickness(5),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FlowDirection = FlowDirection.LeftToRight,
                     Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
                 };
+                string path = $"pack://application:,,,/Assets/{Ship.GetShipAsset(ship.GetShipType())}";
+                Image icon = new()
+                {
+                    Source = new BitmapImage(new Uri(path, UriKind.Absolute)),
+                    Width = 16,
+                    Height = 16,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                TextBlock shipBlock = new TextBlock
+                {
+                    Text = $"{ship.GetShipType()} ({ship.GetHits()}/{ship.GetSize()})",
+                    Margin = new Thickness(5),
+                    FontSize = 8,
+                    Foreground = ship.GetHits() >= ship.GetSize() ? Brushes.White : Brushes.Black,
+                };
+                shipPanelStack.Children.Add(icon);
+                shipPanelStack.Children.Add(shipBlock);
 
-                OwnShipsPanel.Children.Add(shipBlock);
+                OwnShipsPanel.Children.Add(shipPanelStack);
             }
 
             foreach (IShip ship in enemyShips)
             {
+                StackPanel shipPanelStack = new StackPanel()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FlowDirection = FlowDirection.LeftToRight,
+                    Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
+                };
+                string path = $"pack://application:,,,/Assets/{Ship.GetShipAsset(ship.GetShipType())}";
+                Image icon = new()
+                {
+                    Source = new BitmapImage(new Uri(path, UriKind.Absolute)),
+                    Width = 16,
+                    Height = 16,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
                 TextBlock shipBlock = new TextBlock
                 {
                     Text = $"{ship.GetShipType()}",
                     Margin = new Thickness(5),
-                    FontSize = 13,
+                    FontSize = 8,
                     Foreground = Brushes.Black,
-                    Padding = new Thickness(5),
-                    Background = ship.GetHits() >= ship.GetSize() ? Brushes.Red : Brushes.LightGreen,
                 };
-                EnemyShipsPanel.Children.Add(shipBlock);
+                shipPanelStack.Children.Add(icon);
+                shipPanelStack.Children.Add(shipBlock);
+
+                EnemyShipsPanel.Children.Add(shipPanelStack);
             }
         }
 

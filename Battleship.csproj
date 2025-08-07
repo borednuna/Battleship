@@ -9,11 +9,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\battleship.png" />
+    <None Remove="Assets\carrier.png" />
+    <None Remove="Assets\cruiser.png" />
+    <None Remove="Assets\destroyer.png" />
     <None Remove="Assets\sea_bg.png" />
+    <None Remove="Assets\submarine.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\battleship.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\carrier.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\cruiser.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\destroyer.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\sea_bg.png" />
+    <Resource Include="Assets\submarine.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

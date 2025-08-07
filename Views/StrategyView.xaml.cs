@@ -86,11 +86,29 @@ namespace Battleship.Views
             foreach (IShip ship in currentPlayerFleet)
             {
                 bool isPlaced = ship.GetIsPlaced();
+                StackPanel buttonContent = new();
+
+                string iconPath = $"pack://application:,,,/Assets/{Ship.GetShipAsset(ship.GetShipType())}";
+                Image icon = new()
+                {
+                    Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute)),
+                    Width = 40,
+                    Height = 40,
+                    Margin = new Thickness(5),
+                    Stretch = Stretch.Uniform
+                };
+                TextBlock buttonText = new()
+                {
+                    Text = $"{ship.GetShipType()} ({ship.GetSize()})"
+                };
+                buttonContent.Children.Add(icon);
+                buttonContent.Children.Add(buttonText);
+
                 var cellButton = new Button
                 {
                     Name = ship.GetShipType().ToString(),
                     IsEnabled = !isPlaced,
-                    Content = $"{ship.GetShipType()} ({ship.GetSize()})",
+                    Content = buttonContent,
                     Style = (Style)FindResource("ShipSelectionButton"),
                 };
 

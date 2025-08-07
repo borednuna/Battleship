@@ -49,6 +49,7 @@
         </Style>
 
         <Style TargetType="Button" x:Key="ShipSelectionButton" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background" Value="DimGray" />
             <Setter Property="Width" Value="150"/>
             <Setter Property="Height" Value="100"/>
             <Setter Property="Margin" Value="5" />
@@ -91,7 +92,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Background="#CCFFFFFF" Padding="5" CornerRadius="10" Opacity="0.8"
+            <Border Background="#CCFFFFFF" Padding="5" Opacity="0.8"
                 VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
                 <StackPanel Grid.Row="0">
                     <TextBlock x:Name="StrategyPanelTitle"
