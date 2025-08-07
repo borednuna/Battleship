@@ -293,9 +293,13 @@ namespace Battleship.Views
             bool _ = _gameController.PlaceShip(_gameController.GetCurrentPlayer(), (ShipType)_selectedShipType, occupyCoordinate);
 
             RepaintBoard();
-
             ShipSelectionPanel.Children.Clear();
             PaintShipPanel();
+
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.Open(new Uri("Assets/boom.mp3", UriKind.RelativeOrAbsolute));
+            mediaPlayer.Volume = 0.8;
+            mediaPlayer.Play();
 
             foreach (Button selectedShipOption in ShipSelectionPanel.Children)
             {

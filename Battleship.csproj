@@ -10,17 +10,27 @@
 
   <ItemGroup>
     <None Remove="Assets\battleship.png" />
+    <None Remove="Assets\boom.mp3" />
     <None Remove="Assets\carrier.png" />
     <None Remove="Assets\cruiser.png" />
     <None Remove="Assets\destroyer.png" />
+    <None Remove="Assets\powerup.mp3" />
     <None Remove="Assets\sea_bg.png" />
+    <None Remove="Assets\silhouette.png" />
     <None Remove="Assets\submarine.png" />
+    <None Remove="Assets\win.mp3" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\battleship.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Assets\boom.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\win.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Assets\carrier.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -30,7 +40,13 @@
     <Resource Include="Assets\destroyer.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Assets\powerup.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Assets\sea_bg.png" />
+    <Resource Include="Assets\silhouette.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\submarine.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

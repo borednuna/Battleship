@@ -18,9 +18,17 @@ namespace Battleship
     /// </summary>
     public partial class MainWindow : Window
     {
+        MediaPlayer mediaPlayer = new MediaPlayer();
+
         public MainWindow()
         {
             InitializeComponent();
+            
+            mediaPlayer.Open(new Uri("Assets/powerup.mp3", UriKind.RelativeOrAbsolute));
+            mediaPlayer.Volume = 0.4;
+            mediaPlayer.MediaEnded += (s, e) => mediaPlayer.Position = TimeSpan.Zero;
+            mediaPlayer.Play();
+
             GameController gameController = new();
             gameController.Reset();
 

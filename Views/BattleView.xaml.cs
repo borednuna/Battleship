@@ -64,9 +64,14 @@ namespace Battleship.Views
 
                     bool trackingCellIsHit = trackingBoard.GetBoard(cellPosition).IsHit();
                     bool trackingCellHasShip = trackingBoardShips.ContainsKey(cellPosition);
+                    IShip? enemyShip = trackingBoard.GetBoard(cellPosition).GetShip();
+                    bool isEnemyShipRevealed = false;
+                    if (enemyShip != null)
+                    {
+                        isEnemyShipRevealed = enemyShip.GetHits() >= enemyShip.GetSize();
+                    }
 
                     var trackingCellGrid = new Grid();
-
                     var trackingButton = new Button
                     {
                         Style = (Style)FindResource("BoardGridButton"),
@@ -83,7 +88,16 @@ namespace Battleship.Views
 
                     if (trackingCellHasShip)
                     {
-                        string iconPath = $"pack://application:,,,/Assets/{GameController.DEFAULT_SHIP_PATH}";
+                        string iconPath;
+                        if (isEnemyShipRevealed && enemyShip != null)
+                        {
+                            iconPath = $"pack://application:,,,/Assets/{Ship.GetShipAsset(enemyShip.GetShipType())}";
+                        }
+                        else
+                        {
+                            iconPath = $"pack://application:,,,/Assets/{GameController.DEFAULT_SHIP_PATH}";
+                        }
+
                         var icon = new Image
                         {
                             Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute)),
@@ -97,9 +111,9 @@ namespace Battleship.Views
                         trackingCellGrid.Children.Add(icon);
                     }
 
-                    Grid.SetRow(trackingButton, row);
-                    Grid.SetColumn(trackingButton, col);
-                    TrackingGrid.Children.Add(trackingButton);
+                    Grid.SetRow(trackingCellGrid, row);
+                    Grid.SetColumn(trackingCellGrid, col);
+                    TrackingGrid.Children.Add(trackingCellGrid);
                     trackingButton.Click += TakeTurn_Click;
 
                     bool cellIsHit = ownBoard.GetBoard(cellPosition).IsHit();
@@ -219,12 +233,8 @@ namespace Battleship.Views
         private void TakeTurn_Click(object sender, RoutedEventArgs e)
         {
             Button targetHitButton = (Button)sender;
-            int row = Grid.GetRow(targetHitButton);
-            int col = Grid.GetColumn(targetHitButton);
-
-            Coordinate targetCoordinate = new();
-            targetCoordinate.SetX(col);
-            targetCoordinate.SetY(row);
+            if (targetHitButton.Tag is not Coordinate targetCoordinate)
+                return;
 
             string? takeTurnError = _gameController.TakeTurnValidate(targetCoordinate);
             if (takeTurnError != null)
@@ -235,6 +245,14 @@ namespace Battleship.Views
 
             _gameController.TakeTurn(targetCoordinate);
             bool cellHasShip = _gameController.HasShip(targetCoordinate);
+
+            if (cellHasShip)
+            {
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.Open(new Uri("Assets/boom.mp3", UriKind.RelativeOrAbsolute));
+                mediaPlayer.Volume = 0.8;
+                mediaPlayer.Play();
+            }
 
             if (_gameController.GetCurrentGameState() == GameStates.GAME_OVER)
             {

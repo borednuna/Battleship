@@ -28,6 +28,7 @@ namespace Battleship.Views
             _gameController = gameController;
             InitializeComponent();
             SetWinnerMessage();
+            PlayWinSfx();
         }
 
         public void SetWinnerMessage()
@@ -38,6 +39,14 @@ namespace Battleship.Views
             {
                 WinnerField.Text = $"{winner.GetName()} won the game!";
             }
+        }
+
+        public void PlayWinSfx()
+        {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.Open(new Uri("Assets/win.mp3", UriKind.RelativeOrAbsolute));
+            mediaPlayer.Volume = 0.8;
+            mediaPlayer.Play();
         }
 
         public void RestartGame_Click(object sender, RoutedEventArgs e)
